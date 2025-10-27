@@ -8,13 +8,13 @@
     class="scroll-to-top-button"
     aria-label="Back to top"
   >
-    <i class="fa-solid fa-arrow-up"></i> {/* Lucide ArrowUp */}
+    <i class="fa-solid fa-arrow-up"></i>
   </button>
 
   <div class="container footer-content">
     <div class="footer-logo">
-      <i class="fa-solid fa-palette icon-coral"></i> {/* Lucide Palette */}
-      <span class="font-bold text-lg">Divinex Agency</span> {/* Changed from 'Portfolio' */}
+      <i class="fa-solid fa-palette logo-icon"></i> {/* Re-using .logo-icon class */}
+      <span class="font-bold text-lg" style="color: var(--color-text-on-dark);">Divinex Agency</span>
     </div>
 
     <div class="footer-social-links">
@@ -61,86 +61,3 @@
     }
   });
 </script>
-
-<style>
-  .footer {
-    background-color: var(--color-neutral-900); /* bg-neutral-900 */
-    color: white;
-    padding-top: 3rem; /* py-12 */
-    padding-bottom: 3rem; /* py-12 */
-    position: relative;
-  }
-
-  .scroll-to-top-button {
-    position: absolute;
-    top: -1.5rem; /* -top-6 */
-    left: 50%;
-    transform: translateX(-50%); /* -translate-x-1/2 */
-    width: 3rem; /* w-12 */
-    height: 3rem; /* h-12 */
-    background-color: var(--color-coral-500);
-    border-radius: 9999px; /* rounded-full */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-    border: none;
-    cursor: pointer;
-    color: white;
-  }
-  .scroll-to-top-button:hover {
-    background-color: var(--color-coral-600);
-  }
-  .scroll-to-top-button i {
-    width: 1.5rem; /* w-6 */
-    height: 1.5rem; /* h-6 */
-  }
-
-  .footer-content {
-    display: flex;
-    flex-direction: column; /* flex-col */
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem; /* gap-6 */
-  }
-
-  @media (min-width: 768px) { /* md breakpoint */
-    .footer-content {
-      flex-direction: row; /* md:flex-row */
-    }
-  }
-
-  .footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem; /* gap-2 */
-  }
-  .footer-logo i {
-    width: 1.5rem; /* w-6 */
-    height: 1.5rem; /* h-6 */
-    color: var(--color-coral-500);
-  }
-  .footer-logo span {
-    font-weight: 700; /* font-bold */
-    font-size: 1.125rem; /* text-lg */
-  }
-
-  .footer-social-links {
-    display: flex;
-    gap: 1.5rem; /* gap-6 */
-  }
-
-  .footer-link {
-    color: white;
-    transition: color 0.15s ease;
-  }
-  .footer-link:hover {
-    color: var(--color-coral-500);
-  }
-
-  .footer-copyright {
-    color: var(--color-neutral-400); /* text-neutral-400 */
-    font-size: 0.875rem; /* text-sm */
-  }
-</style>

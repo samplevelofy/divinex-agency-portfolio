@@ -1,8 +1,3 @@
-/* Removed Tailwind Directives */
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
-
 /* Global CSS Variables for Colors */
 :root {
   --color-neutral-50: #fafafa;
@@ -27,24 +22,39 @@
   --color-coral-800: #b5331c;
   --color-coral-900: #94301d;
 
-  /* Fallback for primary text, same as neutral-900 */
-  --color-text-primary: var(--color-neutral-900);
-  /* Fallback for secondary text, same as neutral-600 */
-  --color-text-secondary: var(--color-neutral-600);
-  /* Accent color */
-  --color-accent: var(--color-coral-500);
+  /* Semantic color names */
+  --color-brand-primary: var(--color-coral-500);
+  --color-brand-secondary: var(--color-coral-100);
+  --color-text-dark: var(--color-neutral-900);
+  --color-text-medium: var(--color-neutral-700);
+  --color-text-light: var(--color-neutral-600);
+  --color-text-on-dark: #ffffff; /* White text on dark backgrounds */
+  --color-background-light: #ffffff; /* General light background */
+  --color-background-dark: var(--color-neutral-900); /* General dark background */
+  --color-border: var(--color-neutral-200);
 
-  /* Typography - You might want to define more font variables later */
+  /* Typography */
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Spacing helpers */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 5rem;
+  --spacing-5xl: 6rem; /* py-24 equivalent */
 }
 
 /* Base Styles */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem; /* For sticky header */
-  font-family: var(--font-sans); /* Apply default font */
+  scroll-padding-top: var(--spacing-4xl); /* Space for the sticky header */
+  font-family: var(--font-sans);
 }
 
 body {
@@ -53,27 +63,28 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-neutral-50); /* Your bg-white from Tailwind */
-  color: var(--color-neutral-900); /* Your text-neutral-900 */
+  background-color: var(--color-background-light);
+  color: var(--color-text-dark);
 }
 
 *, ::before, ::after {
-    box-sizing: border-box; /* Global box-sizing */
+    box-sizing: border-box;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    color: var(--color-text-primary);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-dark);
+    line-height: 1.2;
 }
 
 p {
     line-height: 1.6;
-    margin-bottom: 1em;
+    margin-bottom: var(--spacing-md);
 }
 
 a {
-    color: var(--color-accent);
+    color: var(--color-brand-primary);
     text-decoration: none;
 }
 
@@ -81,16 +92,23 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Re-defined container */
+/* Container for responsive centering */
 .container {
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: var(--spacing-lg); /* px-6 equivalent */
+    padding-right: var(--spacing-lg);
 }
 
-/* Animations (from your tailwind config) */
+/* Generic section padding */
+section {
+    padding-top: var(--spacing-5xl);
+    padding-bottom: var(--spacing-5xl);
+}
+
+
+/* --- Animations (from your original tailwind config) --- */
 @keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -106,29 +124,263 @@ a:hover {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Utility classes for animations (equivalent to your Tailwind ones) */
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-in;
+.animate-fade-in { animation: fadeIn 0.8s ease-in; }
+.animate-fade-in-delay { animation: fadeIn 1s ease-in 0.2s both; }
+.animate-slide-up { animation: slideUp 0.6s ease-out; }
+.animate-slide-up-delay { animation: slideUp 0.8s ease-out 0.2s both; }
+.animate-scale-in { animation: scaleIn 0.3s ease-out; }
+
+
+/* --- Navbar Styles (Moved from Navbar.astro) --- */
+.main-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50; /* Restore original z-index */
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+  padding-top: var(--spacing-md); /* py-4 */
+  padding-bottom: var(--spacing-md); /* py-4 */
+  background-color: var(--color-background-light); /* bg-white/90, will be clearer with content */
+  backdrop-filter: blur(8px); /* backdrop-blur-lg */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-lg */
 }
 
-.animate-fade-in-delay {
-  animation: fadeIn 1s ease-in 0.2s both;
+.main-navbar.scrolled {
+  background-color: rgba(255, 255, 255, 0.95); /* bg-white/90 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
 }
 
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out;
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.animate-slide-up-delay {
-  animation: slideUp 0.8s ease-out 0.2s both;
+/* Logo Styling */
+.logo-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm); /* gap-2 */
+  text-decoration: none;
+  transition: color 0.15s ease;
+  color: var(--color-text-dark); /* Default text color */
+}
+.logo-icon {
+  color: var(--color-brand-primary);
+  width: var(--spacing-lg); /* w-6 */
+  height: var(--spacing-lg); /* h-6 */
+}
+.logo-text {
+  font-size: var(--spacing-lg); /* text-xl */
+  font-weight: 700; /* font-bold */
+  color: var(--color-text-dark); /* text-neutral-900 */
+  text-decoration: none;
+}
+.logo-button:hover {
+  color: var(--color-brand-primary); /* hover:text-coral-500 */
+}
+.logo-button:hover .logo-text {
+    color: var(--color-brand-primary); /* Apply to text as well */
 }
 
-.animate-scale-in {
-  animation: scaleIn 0.3s ease-out;
+
+/* Desktop Nav Links */
+.desktop-nav-links {
+  display: none; /* Hidden on mobile by default */
+  align-items: center;
+  gap: var(--spacing-xl); /* gap-8 */
 }
 
-/* Generic section padding */
-section {
-    padding-top: 6rem; /* equivalent to py-24, adjust if needed */
-    padding-bottom: 6rem;
+@media (min-width: 768px) { /* md breakpoint */
+  .desktop-nav-links {
+    display: flex; /* Show on desktop */
+  }
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-medium); /* text-neutral-700 */
+  transition: color 0.15s ease;
+  font-weight: 500; /* font-medium */
+  padding: var(--spacing-sm) 0;
+  font-size: var(--spacing-md);
+}
+.nav-link:hover {
+  color: var(--color-brand-primary); /* hover:text-coral-500 */
+}
+
+.btn-admin {
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-dark); /* text-white */
+  padding: var(--spacing-sm) var(--spacing-md); /* px-8 py-4 equivalent */
+  border-radius: var(--spacing-sm); /* rounded-lg */
+  font-weight: 500; /* font-medium */
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  margin-left: var(--spacing-md); /* ml-4 */
+  display: inline-block;
+}
+.btn-admin:hover {
+  background-color: var(--color-coral-600);
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: block; /* Show on mobile by default */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-dark); /* text-neutral-900 */
+  padding: var(--spacing-sm);
+}
+.mobile-menu-toggle .menu-icon,
+.mobile-menu-toggle .close-icon {
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+  .mobile-menu-toggle {
+    display: none; /* Hide on desktop */
+  }
+}
+
+.mobile-menu-dropdown {
+  display: none; /* Hidden by default, toggled by JS */
+  background-color: var(--color-background-light); /* bg-white */
+  border-top: 1px solid var(--color-border); /* border-t border-neutral-200 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 100%; /* Positions it right below the navbar */
+}
+
+.mobile-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md); /* gap-4 */
+  padding: var(--spacing-md) var(--spacing-lg); /* px-6 py-4 equivalent */
+}
+
+.nav-link-mobile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-medium); /* text-neutral-700 */
+  transition: color 0.15s ease;
+  font-weight: 500; /* font-medium */
+  text-align: left;
+  padding: var(--spacing-sm) 0;
+  width: 100%;
+  font-size: var(--spacing-md);
+}
+.nav-link-mobile:hover {
+  color: var(--color-brand-primary); /* hover:text-coral-500 */
+}
+.btn-admin-mobile {
+   background-color: var(--color-brand-primary);
+  color: var(--color-text-on-dark);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--spacing-sm);
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  display: block;
+  width: 100%;
+}
+.btn-admin-mobile:hover {
+  background-color: var(--color-coral-600);
+}
+
+
+/* --- Footer Styles (Moved from Footer.astro) --- */
+.footer {
+  background-color: var(--color-background-dark); /* bg-neutral-900 */
+  color: var(--color-text-on-dark); /* text-white */
+  padding-top: var(--spacing-2xl); /* py-12 */
+  padding-bottom: var(--spacing-2xl); /* py-12 */
+  position: relative;
+}
+
+.scroll-to-top-button {
+  position: absolute;
+  top: calc(-1 * var(--spacing-lg)); /* -top-6 */
+  left: 50%;
+  transform: translateX(-50%); /* -translate-x-1/2 */
+  width: var(--spacing-3xl); /* w-12 */
+  height: var(--spacing-3xl); /* h-12 */
+  background-color: var(--color-brand-primary);
+  border-radius: 9999px; /* rounded-full */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-on-dark);
+}
+.scroll-to-top-button:hover {
+  background-color: var(--color-coral-600);
+}
+.scroll-to-top-button i {
+  width: var(--spacing-lg); /* w-6 */
+  height: var(--spacing-lg); /* h-6 */
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg); /* gap-6 */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+  .footer-content {
+    flex-direction: row;
+  }
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm); /* gap-2 */
+}
+.footer-logo i {
+  width: var(--spacing-lg); /* w-6 */
+  height: var(--spacing-lg); /* h-6 */
+  color: var(--color-brand-primary);
+}
+.footer-logo span {
+  font-weight: 700;
+  font-size: var(--spacing-md); /* text-lg */
+  color: var(--color-text-on-dark);
+}
+
+.footer-social-links {
+  display: flex;
+  gap: var(--spacing-lg); /* gap-6 */
+}
+
+.footer-link {
+  color: var(--color-text-on-dark);
+  transition: color 0.15s ease;
+}
+.footer-link:hover {
+  color: var(--color-brand-primary);
+}
+
+.footer-copyright {
+  color: var(--color-neutral-400); /* text-neutral-400 */
+  font-size: 0.875rem; /* text-sm */
 }
