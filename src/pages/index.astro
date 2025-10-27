@@ -1,11 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
-// We will import actual sections later, for now, just a placeholder
+import Hero from '../components/sections/Hero.astro';
+import About from '../components/sections/About.astro';
+import Services from '../components/sections/Services.astro';
+import Portfolio from '../components/sections/Portfolio.astro'; // <--- Import your Portfolio component
+// Placeholder imports for other sections, we will fill them in later
+// import Contact from '../components/sections/Contact.astro';
 ---
 
-<Layout title="Welcome">
-    <main class="container" style="min-height: calc(100vh - 10rem); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: 5rem; padding-bottom: 5rem;">
-        <h1>Welcome to Divinex Agency (Styling Restored)</h1>
-        <p>Your Navbar and Footer should now appear as intended by your design. Let's build the sections next!</p>
-    </main>
+<Layout title="Divinex Agency">
+    <Hero />
+    <About />
+    <Services />
+    <Portfolio /> {/* <--- Render the Portfolio component */}
+    {/* Placeholder for other sections */}
+    {/* <Contact /> */}
 </Layout>

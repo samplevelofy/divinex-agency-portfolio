@@ -1,0 +1,264 @@
+---
+import { supabase } from '../../lib/supabase';
+import type { ProjectWithCategory, Category } from '../../lib/database.types';
+
+// Fetch all categories on the server
+const { data: categoriesData, error: categoriesError } = await supabase
+  .from('categories')
+  .select('*')
+  .order('name');
+
+if (categoriesError) {
+  console.error('Error fetching categories:', categoriesError);
+}
+const categories: Category[] = categoriesData || [];
+
+// Fetch all published projects on the server, joining with categories
+const { data: projectsData, error: projectsError } = await supabase
+  .from('projects')
+  .select('*, categories(*)') // Select all project fields and join with category data
+  .eq('is_published', true) // Only fetch published projects
+  .order('display_order', { ascending: true }) // Order as specified in your schema
+  .order('created_at', { ascending: false }); // Fallback order by newest if display_order is same
+
+if (projectsError) {
+  console.error('Error fetching projects:', projectsError);
+}
+const projects: ProjectWithCategory[] = projectsData || [];
+
+// The logic for filtering by category will happen client-side if interactive,
+// or we can make it a server-side filter based on URL params if desired.
+// For now, we'll display all, and the buttons will act as placeholders.
+// A simple client-side filter would require a client-side component (e.g., React/Svelte).
+// Let's implement a very basic client-side JavaScript toggle for now without a full framework.
+---
+
+<section id="portfolio" class="portfolio-section">
+  <div class="container">
+    <div class="text-center section-header">
+      <h2 class="heading-2">Our Work</h2> {/* Changed "My Work" to "Our Work" for agency voice */}
+      <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
+        A collection of recent projects showcasing creative solutions across various design disciplines
+      </p>
+    </div>
+
+    <div class="category-filter-buttons">
+      <button
+        class="filter-button active"
+        data-category-slug="all">
+        All Projects
+      </button>
+      {categories.map((category) => (
+        <button
+          class="filter-button"
+          data-category-slug={category.slug}>
+          {category.name}
+        </button>
+      ))}
+    </div>
+
+    {projects.length === 0 ? (
+      <div class="text-center py-16">
+        <p class="text-neutral-500 text-lg">No projects found. Check back soon!</p>
+      </div>
+    ) : (
+      <div id="portfolio-grid" class="portfolio-grid">
+        {projects.map((project) => (
+          <a
+            href={`/project/${project.id}`}
+            class="project-card group"
+            data-category-slug={project.categories?.slug || 'uncategorized'}>
+            {project.thumbnail ? (
+              <img
+                src={project.thumbnail}
+                alt={project.title}
+                class="project-thumbnail"/>
+            ) : (
+              <div class="project-no-image-placeholder">
+                <span class="text-neutral-400">No image</span>
+              </div>
+            )}
+            <div class="project-card-overlay">
+              <h3 class="project-title-overlay">{project.title}</h3>
+              {project.categories && (
+                <span class="project-category-overlay">{project.categories.name}</span>)
+              }
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<script>
+  // Client-side JS for category filtering (basic implementation)
+  document.addEventListener('astro:page-load', () => {
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const portfolioGrid = document.getElementById('portfolio-grid');
+
+    if (!filterButtons.length || !portfolioGrid) {
+        console.warn('Portfolio filter elements not found, skipping script initialization.');
+        return;
+    }
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        filterButtons.forEach(btn => btn.classList.remove('active')); // Deactivate all
+        button.classList.add('active'); // Activate clicked button
+
+        const selectedSlug = button.dataset.categorySlug;
+        const projectCards = portfolioGrid.querySelectorAll('.project-card');
+
+        projectCards.forEach(card => {
+          const cardCategory = card.dataset.categorySlug;
+          if (selectedSlug === 'all' || cardCategory === selectedSlug) {
+            card.style.display = 'block'; // Show card
+          } else {
+            card.style.display = 'none'; // Hide card
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .portfolio-section {
+    background-color: var(--color-background-light); /* bg-white */
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-4xl); /* mb-16 */
+  }
+  .heading-2 {
+    font-size: 2.5rem; /* text-4xl */
+    line-height: 1.2;
+    font-weight: 700; /* font-bold */
+    color: var(--color-text-dark); /* text-neutral-900 */
+    margin-bottom: var(--spacing-md); /* mb-4 */
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .heading-2 {
+      font-size: 3rem; /* md:text-5xl */
+    }
+  }
+
+  .text-xl { font-size: 1.25rem; }
+  .text-neutral-600 { color: var(--color-neutral-600); }
+  .max-w-2xl { max-width: 42rem; /* 672px */ }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .text-neutral-500 { color: var(--color-neutral-500); }
+  .text-lg { font-size: 1.125rem; }
+
+
+  /* Category Filter Buttons */
+  .category-filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-md); /* gap-4 */
+    margin-bottom: var(--spacing-2xl); /* mb-12 */
+  }
+
+  .filter-button {
+    padding: var(--spacing-sm) var(--spacing-lg); /* px-6 py-3 */
+    border-radius: 9999px; /* rounded-full */
+    font-weight: 500; /* font-medium */
+    transition: all 0.3s ease; /* transition-all duration-300 */
+    background-color: var(--color-neutral-100); /* bg-neutral-100 */
+    color: var(--color-neutral-700); /* text-neutral-700 */
+    border: none;
+    cursor: pointer;
+  }
+  .filter-button:hover {
+    background-color: var(--color-neutral-200); /* hover:bg-neutral-200 */
+  }
+  .filter-button.active {
+    background-color: var(--color-brand-primary); /* bg-coral-500 */
+    color: var(--color-text-on-dark); /* text-white */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+  }
+
+  /* Portfolio Grid */
+  .portfolio-grid {
+    display: grid;
+    gap: var(--spacing-xl); /* gap-8 */
+  }
+  @media (min-width: 768px) {
+    .portfolio-grid {
+      grid-template-columns: repeat(2, 1fr); /* md:grid-cols-2 */
+    }
+  }
+  @media (min-width: 1024px) {
+    .portfolio-grid {
+      grid-template-columns: repeat(3, 1fr); /* lg:grid-cols-3 */
+    }
+  }
+
+  .project-card {
+    position: relative;
+    aspect-ratio: 4 / 3; /* aspect-[4/3] */
+    border-radius: var(--spacing-xl); /* rounded-2xl */
+    overflow: hidden;
+    background-color: var(--color-neutral-100); /* bg-neutral-100 */
+    transition: all 0.3s ease; /* transition-all duration-300 */
+    display: block; /* ensure anchor tag fills space */
+    text-decoration: none; /* remove underline from link */
+    color: inherit; /* inherit color */
+  }
+  .project-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-2xl */
+    transform: translateY(-8px); /* hover:-translate-y-2 */
+  }
+
+  .project-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease; /* transition-transform duration-500 */
+  }
+  .project-card:hover .project-thumbnail {
+    transform: scale(1.1); /* group-hover:scale-110 */
+  }
+
+  .project-no-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-neutral-200);
+  }
+  .project-no-image-placeholder span {
+    color: var(--color-neutral-400);
+  }
+
+  .project-card-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2), transparent); /* bg-gradient-to-t from-black/70 via-black/20 to-transparent */
+    opacity: 0;
+    transition: opacity 0.3s ease; /* transition-opacity duration-300 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--spacing-lg); /* p-6 */
+  }
+  .project-card:hover .project-card-overlay {
+    opacity: 1; /* group-hover:opacity-100 */
+  }
+
+  .project-title-overlay {
+    color: var(--color-text-on-dark); /* text-white */
+    font-weight: 700; /* font-bold */
+    font-size: 1.25rem; /* text-xl */
+    margin-bottom: var(--spacing-sm); /* mb-2 */
+  }
+
+  .project-category-overlay {
+    color: var(--color-coral-300);
+    font-size: 0.875rem; /* text-sm */
+  }
+</style>

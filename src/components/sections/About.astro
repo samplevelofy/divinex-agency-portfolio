@@ -1,0 +1,133 @@
+---
+// No Astro server-side logic needed for About component right now.
+---
+
+<section id="about" class="about-section">
+  <div class="container">
+    <div class="about-content">
+      <div class="text-center section-header">
+        <h2 class="heading-2">About Divinex</h2> {/* Changed "About Me" to "About Divinex" */}
+        <p class="text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed mb-8">
+          We are a passionate graphic design agency dedicated to creating visual experiences that resonate.
+          With a keen eye for detail and a love for clean, modern aesthetics, we help brands tell
+          their stories through compelling design.
+        </p>
+        <p class="text-lg text-neutral-600 max-w-3xl mx-auto leading-relaxed">
+          Our approach combines strategic thinking with creative execution, ensuring every project
+          not only looks beautiful but also achieves its intended purpose. From initial concept to
+          final delivery, we work closely with clients to bring their vision to life.
+        </p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-icon-wrapper">
+            <i class="fa-solid fa-briefcase stat-icon"></i> {/* Lucide Briefcase */}
+          </div>
+          <div class="stat-value">100+</div>
+          <div class="stat-label">Projects Completed</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon-wrapper">
+            <i class="fa-solid fa-users stat-icon"></i> {/* Lucide Users */}
+          </div>
+          <div class="stat-value">50+</div>
+          <div class="stat-label">Happy Clients</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon-wrapper">
+            <i class="fa-solid fa-award stat-icon"></i> {/* Lucide Award */}
+          </div>
+          <div class="stat-value">5+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    background-color: var(--color-neutral-50); /* bg-neutral-50 */
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-4xl); /* mb-16 */
+  }
+  .heading-2 {
+    font-size: 2.5rem; /* text-4xl */
+    line-height: 1.2;
+    font-weight: 700; /* font-bold */
+    color: var(--color-text-dark); /* text-neutral-900 */
+    margin-bottom: var(--spacing-lg); /* mb-6 */
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .heading-2 {
+      font-size: 3rem; /* md:text-5xl */
+    }
+  }
+
+  .text-xl { font-size: 1.25rem; }
+  .text-lg { font-size: 1.125rem; }
+  .text-neutral-600 { color: var(--color-neutral-600); }
+  .max-w-3xl { max-width: 48rem; /* 768px */ }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .leading-relaxed { line-height: 1.625; }
+  .mb-8 { margin-bottom: var(--spacing-xl); }
+  .mb-6 { margin-bottom: var(--spacing-lg); }
+
+  .stats-grid {
+    display: grid;
+    gap: var(--spacing-xl); /* gap-8 */
+    margin-top: var(--spacing-4xl); /* mt-16 */
+  }
+  @media (min-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(3, 1fr); /* md:grid-cols-3 */
+    }
+  }
+
+  .stat-item {
+    background-color: var(--color-background-light); /* bg-white */
+    border-radius: var(--spacing-md); /* rounded-2xl */
+    padding: var(--spacing-xl); /* p-8 */
+    text-align: center;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-lg */
+    transition: box-shadow 0.3s ease;
+  }
+  .stat-item:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-xl */
+  }
+
+  .stat-icon-wrapper {
+    width: var(--spacing-3xl); /* w-16 */
+    height: var(--spacing-3xl); /* h-16 */
+    background-color: var(--color-coral-100);
+    border-radius: 9999px; /* rounded-full */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--spacing-md); /* mb-4 */
+  }
+  .stat-icon {
+    width: var(--spacing-xl); /* w-8 */
+    height: var(--spacing-xl); /* h-8 */
+    color: var(--color-coral-500);
+  }
+
+  .stat-value {
+    font-size: 2.25rem; /* text-4xl */
+    font-weight: 700; /* font-bold */
+    color: var(--color-text-dark); /* text-neutral-900 */
+    margin-bottom: var(--spacing-sm); /* mb-2 */
+  }
+
+  .stat-label {
+    color: var(--color-neutral-600); /* text-neutral-600 */
+  }
+</style>
