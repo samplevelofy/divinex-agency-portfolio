@@ -1,35 +1,134 @@
-@tailwind base;
+/* Removed Tailwind Directives */
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+/* Global CSS Variables for Colors */
+:root {
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
 
-  body {
-    @apply bg-white text-neutral-900;
-  }
+  --color-coral-50: #fff5f3;
+  --color-coral-100: #ffe8e3;
+  --color-coral-200: #ffd5cc;
+  --color-coral-300: #ffb8a9;
+  --color-coral-400: #ff8f75;
+  --color-coral-500: #ff6b47;
+  --color-coral-600: #f04f2e;
+  --color-coral-700: #d63c1f;
+  --color-coral-800: #b5331c;
+  --color-coral-900: #94301d;
+
+  /* Fallback for primary text, same as neutral-900 */
+  --color-text-primary: var(--color-neutral-900);
+  /* Fallback for secondary text, same as neutral-600 */
+  --color-text-secondary: var(--color-neutral-600);
+  /* Accent color */
+  --color-accent: var(--color-coral-500);
+
+  /* Typography - You might want to define more font variables later */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.8s ease-in;
-  }
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* For sticky header */
+  font-family: var(--font-sans); /* Apply default font */
+}
 
-  .animate-fade-in-delay {
-    animation: fadeIn 1s ease-in 0.2s both;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-neutral-50); /* Your bg-white from Tailwind */
+  color: var(--color-neutral-900); /* Your text-neutral-900 */
+}
 
-  .animate-slide-up {
-    animation: slideUp 0.6s ease-out;
-  }
+*, ::before, ::after {
+    box-sizing: border-box; /* Global box-sizing */
+}
 
-  .animate-slide-up-delay {
-    animation: slideUp 0.8s ease-out 0.2s both;
-  }
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    color: var(--color-text-primary);
+}
 
-  .animate-scale-in {
-    animation: scaleIn 0.3s ease-out;
-  }
+p {
+    line-height: 1.6;
+    margin-bottom: 1em;
+}
+
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Re-defined container */
+.container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Animations (from your tailwind config) */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Utility classes for animations (equivalent to your Tailwind ones) */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 1s ease-in 0.2s both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-slide-up-delay {
+  animation: slideUp 0.8s ease-out 0.2s both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Generic section padding */
+section {
+    padding-top: 6rem; /* equivalent to py-24, adjust if needed */
+    padding-bottom: 6rem;
 }
