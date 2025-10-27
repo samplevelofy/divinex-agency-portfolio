@@ -1,0 +1,271 @@
+---
+// No Astro server-side logic needed for this component right now.
+// Client-side interactivity is handled in the <script> block.
+---
+
+<nav id="main-navbar" class="main-navbar">
+  <div class="container navbar-content">
+    <button
+      id="home-link"
+      class="flex items-center gap-2 text-xl font-bold text-neutral-900 hover-text-coral-500 transition-colors"
+      aria-label="Home"
+    >
+      <i class="fa-solid fa-palette" style="color: var(--color-coral-500);"></i>
+      <span style="color: var(--color-neutral-900);">Divinex Agency</span>
+    </button>
+
+    <div class="desktop-nav-links">
+      <button class="nav-link" data-href="#home">Home</button>
+      <button class="nav-link" data-href="#services">Services</button>
+      <button class="nav-link" data-href="#portfolio">Portfolio</button>
+      <button class="nav-link" data-href="#about">About</button>
+      <button class="nav-link" data-href="#contact">Contact</button>
+      <a href="/admin/login" class="btn-admin">Admin Login</a>
+    </div>
+
+    <button
+      id="mobile-menu-button"
+      class="mobile-menu-toggle"
+      aria-label="Toggle menu"
+    >
+      <i class="fa-solid fa-bars menu-icon" id="menu-icon"></i>
+      <i class="fa-solid fa-xmark close-icon" id="close-icon" style="display: none;"></i>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu-dropdown">
+    <div class="container mobile-nav-list">
+      <button class="nav-link-mobile" data-href="#home">Home</button>
+      <button class="nav-link-mobile" data-href="#services">Services</button>
+      <button class="nav-link-mobile" data-href="#portfolio">Portfolio</button>
+      <button class="nav-link-mobile" data-href="#about">About</button>
+      <button class="nav-link-mobile" data-href="#contact">Contact</button>
+      <a href="/admin/login" class="btn-admin-mobile">Admin Login</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const navbar = document.getElementById('main-navbar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+    const homeLinkButton = document.getElementById('home-link');
+
+    if (!navbar || !mobileMenuButton || !mobileMenu || !menuIcon || !closeIcon || !homeLinkButton) {
+        console.error('Navbar elements not found, skipping script initialization.');
+        return;
+    }
+
+    let isMobileMenuOpen = false;
+
+    const toggleMobileMenu = () => {
+      isMobileMenuOpen = !isMobileMenuOpen;
+      if (isMobileMenuOpen) {
+        mobileMenu.style.display = 'block';
+        menuIcon.style.display = 'none';
+        closeIcon.style.display = 'block';
+      } else {
+        mobileMenu.style.display = 'none';
+        menuIcon.style.display = 'block';
+        closeIcon.style.display = 'none';
+      }
+    };
+
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    };
+
+    const scrollToSection = (event) => {
+      const href = event.currentTarget.dataset.href;
+      if (href) {
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (isMobileMenuOpen) {
+          toggleMobileMenu();
+        }
+      }
+    };
+
+    // Event Listeners
+    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    window.addEventListener('scroll', handleScroll);
+
+    // Attach scroll behavior to desktop nav links
+    document.querySelectorAll('.desktop-nav-links .nav-link').forEach(link => {
+        link.addEventListener('click', scrollToSection);
+    });
+
+    // Attach scroll behavior to mobile nav links
+    document.querySelectorAll('.mobile-nav-list .nav-link-mobile').forEach(link => {
+        link.addEventListener('click', scrollToSection);
+    });
+
+    // Handle home button click
+    homeLinkButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        const homeSection = document.getElementById('home');
+        if (homeSection) {
+            homeSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (isMobileMenuOpen) {
+            toggleMobileMenu();
+        }
+    });
+
+    // Initial setup
+    handleScroll();
+    mobileMenu.style.display = 'none'; // Ensure mobile menu is closed by default
+  });
+</script>
+
+<style>
+  .main-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+    padding: 1rem 0;
+    background-color: rgba(255, 255, 255, 0.9); /* Default semi-transparent white background */
+    backdrop-filter: blur(8px); /* Apply blur by default too */
+  }
+
+  .main-navbar.scrolled {
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly less transparent when scrolled */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: 0.5rem; }
+  .text-xl { font-size: 1.25rem; }
+  .font-bold { font-weight: 700; }
+  /* Ensure text color is explicitly set */
+  .text-neutral-900 { color: var(--color-neutral-900); }
+  .hover-text-coral-500:hover { color: var(--color-coral-500); }
+  .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 0.15s; }
+
+  .desktop-nav-links {
+    display: none; /* Hidden on mobile by default */
+    align-items: center;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) { /* md breakpoint */
+    .desktop-nav-links {
+      display: flex; /* Show on desktop */
+    }
+  }
+
+  .nav-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-neutral-700); /* Ensure nav links have a distinct color */
+    transition: color 0.15s ease;
+    font-weight: 500;
+    padding: 0.5rem 0;
+  }
+  .nav-link:hover {
+    color: var(--color-coral-500);
+  }
+
+  .btn-admin {
+    background-color: var(--color-coral-500);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    margin-left: 1rem;
+  }
+  .btn-admin:hover {
+    background-color: var(--color-coral-600);
+  }
+
+  .mobile-menu-toggle {
+    display: block; /* Show on mobile by default */
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-neutral-900); /* Ensure icon color is visible */
+    padding: 0.5rem;
+  }
+  .mobile-menu-toggle .menu-icon,
+  .mobile-menu-toggle .close-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  @media (min-width: 768px) { /* md breakpoint */
+    .mobile-menu-toggle {
+      display: none; /* Hide on desktop */
+    }
+  }
+
+  .mobile-menu-dropdown {
+    display: none; /* Hidden by default, toggled by JS */
+    background-color: white;
+    border-top: 1px solid var(--color-neutral-200);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 100%;
+  }
+
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .nav-link-mobile {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-neutral-700); /* Ensure mobile nav links have distinct color */
+    transition: color 0.15s ease;
+    font-weight: 500;
+    text-align: left;
+    padding: 0.5rem 0;
+    width: 100%;
+  }
+  .nav-link-mobile:hover {
+    color: var(--color-coral-500);
+  }
+  .btn-admin-mobile {
+     background-color: var(--color-coral-500);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 0.5rem;
+    display: block;
+    width: 100%;
+  }
+  .btn-admin-mobile:hover {
+    background-color: var(--color-coral-600);
+  }
+</style>

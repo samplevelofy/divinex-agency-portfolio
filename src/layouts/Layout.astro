@@ -1,6 +1,7 @@
 ---
-// Import the new global stylesheet
 import '../styles/globals.css';
+import Navbar from '../components/layout/Navbar.astro';
+import Footer from '../components/layout/Footer.astro';
 
 interface Props {
     title: string;
@@ -18,8 +19,12 @@ const { title, description = 'Divinex Agency Portfolio showcasing branding, logo
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} | Divinex Agency</title>
+    <!-- Font Awesome for Icons (since lucide-react is React-specific) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2jrdExoQ0sGUJzUjA/c2Z9W0/p8QzG5z4c2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <slot />
+    <Navbar />
+    <slot /> {/* <--- This is where your page content renders */}
+    <Footer />
 </body>
 </html>
