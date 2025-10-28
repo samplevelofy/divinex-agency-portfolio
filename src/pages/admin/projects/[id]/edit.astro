@@ -1,0 +1,302 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { supabase } from '../../../../lib/supabase';
+import type { Project, Category } from '../../../../lib/database.types';
+
+const projectId = Astro.params.id; // Get project ID from URL parameter
+
+let project: Project | null = null;
+let categories: Category[] = [];
+let fetchError: string | null = null;
+let message = '';
+let messageType: 'success' | 'error' = 'error';
+
+// Fetch existing project data and categories on page load
+try {
+    const { data: cats, error: catErr } = await supabase.from('categories').select('*').order('name');
+    if (catErr) throw catErr;
+    categories = cats || [];
+
+    const { data: proj, error: projErr } = await supabase.from('projects').select('*').eq('id', projectId).single();
+    if (projErr) throw projErr;
+    project = proj || null;
+
+    if (!project) {
+        throw new Error('Project not found.');
+    }
+
+} catch (e: any) {
+    console.error("Admin Edit Project Fetch Error:", e.message);
+    fetchError = e.message;
+    message = `Failed to load project data: ${e.message}`;
+    messageType = 'error';
+}
+
+if (Astro.request.method === 'POST') {
+    try {
+        const formData = await Astro.request.formData();
+        const title = formData.get('title')?.toString();
+        const description = formData.get('description')?.toString();
+        const thumbnailFile = formData.get('thumbnail-url')?.toString(); // Direct URL input
+        const uploadedFile = formData.get('thumbnail-upload') as File; // Actual file upload
+        const category_id = formData.get('category_id')?.toString();
+        const is_published = formData.get('is_published') === 'on';
+        const display_order = formData.get('display_order')?.toString();
+
+        if (!title) {
+            throw new Error('Project title is required.');
+        }
+
+        let finalThumbnailUrl = project?.thumbnail || ''; // Default to existing or empty string
+
+        // Handle file upload if a new file is provided
+        if (uploadedFile && uploadedFile.size > 0) {
+            const uploadResponse = await fetch('/api/admin/projects/upload', {
+                method: 'POST',
+                body: formData, // Send formData directly for file upload
+            });
+
+            if (uploadResponse.ok) {
+                const uploadResult = await uploadResponse.json();
+                finalThumbnailUrl = uploadResult.url; // Use the URL from the upload API
+            } else {
+                const uploadErrorData = await uploadResponse.json();
+                throw new Error(`Failed to upload image: ${uploadErrorData.error || 'Unknown upload error'}`);
+            }
+        } else if (thumbnailFile) {
+            // If no new file uploaded, but a URL was provided in the text input
+            finalThumbnailUrl = thumbnailFile;
+        }
+
+
+        const response = await fetch(`/api/admin/projects/update`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: projectId,
+                title,
+                description,
+                thumbnail: finalThumbnailUrl,
+                category_id,
+                is_published,
+                display_order: parseInt(display_order || '0'),
+            }),
+        });
+
+        if (response.ok) {
+            message = 'Project updated successfully!';
+            messageType = 'success';
+            // Reload project data to reflect changes
+            const { data: updatedProj, error: updatedProjErr } = await supabase.from('projects').select('*').eq('id', projectId).single();
+            if (updatedProjErr) throw updatedProjErr;
+            project = updatedProj; // Update local project state
+        } else {
+            const errorData = await response.json();
+            throw new Error(`Failed to update project: ${errorData.error || 'Unknown error'}`);
+        }
+
+    } catch (error: any) {
+        console.error("Edit Project Form Submission Error:", error.message);
+        message = error.message;
+        messageType = 'error';
+    }
+}
+---
+
+<Layout title={`Edit Project: ${project?.title || 'Loading...'}`}>
+    <section class="admin-page-section">
+        <div class="container admin-container">
+            <div class="admin-header">
+                <h1 class="heading-2 mb-sm">Edit Project: {project?.title || 'Loading...'}</h1>
+                <p class="text-neutral-600">Update the details of your portfolio project.</p>
+            </div>
+
+            {fetchError && (
+                <div class="admin-message-error mt-lg">
+                    Error loading project/categories: {fetchError}<br/>
+                    You might not be able to edit or save changes until Codespace network or Supabase connection is resolved.
+                </div>
+            )}
+
+            {message && (
+                <div class:list={['admin-message', messageType === 'error' ? 'admin-message-error' : 'admin-message-success']}>
+                    {message}
+                </div>
+            )}
+
+            {project ? (
+                <form method="POST" class="admin-form mt-xl" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="title" class="form-label">Project Title *</label>
+                        <input type="text" id="title" name="title" required class="form-input" value={project.title}>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" name="description" rows="5" class="form-input">{project.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="thumbnail-url" class="form-label">Thumbnail Image URL</label>
+                        <input type="text" id="thumbnail-url" name="thumbnail-url" class="form-input" value={project.thumbnail || ''} placeholder="e.g., https://your-image.com/image.jpg">
+                        <small class="form-help-text">Direct URL for the thumbnail image.</small>
+                        {project.thumbnail && <img src={project.thumbnail} alt="Current Thumbnail" class="current-thumbnail-preview mt-sm">}
+                    </div>
+                    <div class="form-group">
+                        <label for="thumbnail-upload" class="form-label">Upload New Thumbnail Image</label>
+                        <input type="file" id="thumbnail-upload" name="thumbnail-upload" accept="image/*" class="form-input-file">
+                        <small class="form-help-text">Upload a new image file (this will override the URL above).</small>
+                    </div>
+                    {/* More Image Gallery would go here, for now keeping it simple */}
+                    <div class="form-group">
+                        <label for="category_id" class="form-label">Category</label>
+                        <select id="category_id" name="category_id" class="form-input">
+                            <option value="">Select Category</option>
+                            {categories.map((cat) => (
+                                <option value={cat.id} selected={project?.category_id === cat.id}>{cat.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div class="form-group form-checkbox-group">
+                        <input type="checkbox" id="is_published" name="is_published" class="form-checkbox" checked={project.is_published}>
+                        <label for="is_published" class="form-label">Publish Project</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="display_order" class="form-label">Display Order</label>
+                        <input type="number" id="display_order" name="display_order" class="form-input" value={project.display_order}>
+                    </div>
+
+                    <button type="submit" class="btn-primary-full-width mt-xl">Save Changes</button>
+                </form>
+            ) : (
+                <p class="text-center text-red-500 mt-xl">Project data could not be loaded.</p>
+            )}
+        </div>
+    </section>
+</Layout>
+
+<style>
+    .admin-page-section {
+        padding-top: var(--spacing-4xl);
+        padding-bottom: var(--spacing-4xl);
+        background-color: var(--color-neutral-50);
+        min-height: calc(100vh - 5rem);
+    }
+    .admin-container {
+        max-width: 700px;
+        background-color: var(--color-background-light);
+        padding: var(--spacing-xl) var(--spacing-3xl);
+        border-radius: var(--spacing-lg);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+    .admin-header {
+        text-align: center;
+        margin-bottom: var(--spacing-3xl);
+    }
+    .heading-2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--color-text-dark);
+        margin-bottom: var(--spacing-sm);
+    }
+    .text-neutral-600 {
+        color: var(--color-neutral-600);
+    }
+
+    .admin-message {
+        padding: var(--spacing-md);
+        border-radius: var(--spacing-sm);
+        text-align: center;
+        margin-top: var(--spacing-lg);
+    }
+    .admin-message-error {
+        background-color: rgba(255,99,71,0.1);
+        color: var(--color-coral-700);
+        border: 1px solid var(--color-coral-200);
+    }
+    .admin-message-success {
+        background-color: rgba(144,238,144,0.1);
+        color: green;
+        border: 1px solid lightgreen;
+    }
+
+    .admin-form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    .form-group {
+        margin-bottom: 0;
+    }
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-neutral-700);
+        margin-bottom: var(--spacing-xs);
+    }
+    .form-input, .form-input-file {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--color-neutral-300);
+        border-radius: 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    .form-input:focus {
+        border-color: var(--color-brand-primary);
+        box-shadow: 0 0 0 2px rgba(255,107,71,0.2);
+    }
+    .form-input-file {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    .form-help-text {
+        font-size: 0.75rem;
+        color: var(--color-neutral-500);
+        margin-top: var(--spacing-xs);
+        display: block;
+    }
+
+    .form-checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-md);
+    }
+    .form-checkbox {
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--color-brand-primary);
+    }
+    .form-checkbox-group .form-label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    .btn-primary-full-width {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--color-brand-primary);
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-primary-full-width:hover {
+        background-color: var(--color-coral-600);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .current-thumbnail-preview {
+        max-width: 150px;
+        height: auto;
+        border-radius: var(--spacing-xs);
+        border: 1px solid var(--color-border);
+        margin-top: var(--spacing-sm);
+    }
+    .mt-xl { margin-top: var(--spacing-xl); }
+    .mt-lg { margin-top: var(--spacing-lg); }
+    .mt-sm { margin-top: var(--spacing-sm); }
+</style>

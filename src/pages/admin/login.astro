@@ -1,0 +1,105 @@
+---
+// This is a TEMPORARY, INSECURE STATIC LOGIN for local development only.
+// For production, a proper authentication system (like Supabase Auth or Vercel Auth) is required.
+
+import Layout from '../../layouts/Layout.astro';
+import { Astro } from 'astro/runtime'; // Import Astro explicitly for redirects
+
+let message = '';
+let messageType: 'success' | 'error' = 'error';
+
+if (Astro.request.method === 'POST') {
+    try {
+        const formData = await Astro.request.formData();
+        const password = formData.get('password')?.toString();
+
+        // Set your simple admin password here for local development.
+        // !!! IMPORTANT: CHANGE THIS PASSWORD !!!
+        const ADMIN_PASSWORD = "12345678"; // CHANGE THIS!
+
+        if (password === ADMIN_PASSWORD) {
+            // In a real app, you'd set a session cookie here.
+            // For this simple local dev setup, we'll just redirect.
+            return Astro.redirect('/admin/dashboard');
+        } else {
+            throw new Error('Incorrect password.');
+        }
+
+    } catch (error: any) {
+        console.error("Login Error:", error.message);
+        message = error.message;
+        messageType = 'error';
+    }
+}
+---
+
+<Layout title="Admin Login">
+    <section class="admin-auth-section">
+        <div class="container admin-auth-container">
+            <h1 class="heading-2 text-center mb-xl">Admin Login</h1>
+            <p class="text-center text-neutral-600 mb-2xl">Enter your password to access the Divinex admin dashboard.</p>
+
+            <form method="POST" class="admin-auth-form">
+                {/* Removed email field as it's not needed for static password */}
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" required class="form-input" placeholder="••••••••" autocomplete="current-password">
+                </div>
+
+                {message && (
+                    <div class:list={['auth-message', messageType === 'error' ? 'auth-message-error' : 'auth-message-success']}>
+                        {message}
+                    </div>
+                )}
+
+                <button type="submit" class="btn-primary-full-width mt-xl">Login</button>
+            </form>
+        </div>
+    </section>
+
+</Layout>
+
+<style>
+    .admin-auth-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 5rem); /* Adjust for navbar height */
+        background-color: var(--color-neutral-50);
+        padding: var(--spacing-3xl) 0;
+    }
+    .admin-auth-container {
+        max-width: 450px;
+        background-color: var(--color-background-light);
+        padding: var(--spacing-xl) var(--spacing-3xl);
+        border-radius: var(--spacing-lg);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+    .admin-auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-2xl);
+    }
+    .form-group { margin-bottom: 0; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--color-neutral-700); margin-bottom: var(--spacing-sm); }
+    .form-input {
+        width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--color-neutral-300); border-radius: 0.5rem;
+        font-family: var(--font-sans); font-size: 1rem; outline: none; transition: all 0.3s ease;
+    }
+    .form-input:focus { border-color: var(--color-brand-primary); box-shadow: 0 0 0 2px rgba(255,107,71,0.2); }
+
+    .auth-message { padding: var(--spacing-sm); border-radius: 0.25rem; margin-top: var(--spacing-md); text-align: center; }
+    .auth-message-error { background-color: rgba(255,99,71,0.1); color: var(--color-coral-700); border: 1px solid var(--color-coral-200); }
+    .auth-message-success { background-color: rgba(144,238,144,0.1); color: green; border: 1px solid lightgreen; }
+
+    .btn-primary-full-width {
+        width: 100%; padding: 0.75rem 1.5rem; background-color: var(--color-brand-primary); color: white;
+        border-radius: 0.5rem; font-weight: 500; transition: all 0.3s ease; border: none; cursor: pointer;
+    }
+    .btn-primary-full-width:hover { background-color: var(--color-coral-600); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+
+    .mb-xl { margin-bottom: var(--spacing-xl); }
+    .mb-2xl { margin-bottom: var(--spacing-2xl); }
+    .mt-xl { margin-top: var(--spacing-xl); }
+</style>

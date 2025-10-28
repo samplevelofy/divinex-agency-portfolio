@@ -33,10 +33,10 @@ export interface Database {
         Row: {
           id: string
           title: string
-          description: string
+          description: string | null
           category_id: string | null
-          images: Json
-          thumbnail: string
+          images: Json | null
+          thumbnail: string | null
           is_published: boolean
           display_order: number
           created_at: string
@@ -45,10 +45,10 @@ export interface Database {
         Insert: {
           id?: string
           title: string
-          description?: string
+          description?: string | null
           category_id?: string | null
-          images?: Json
-          thumbnail?: string
+          images?: Json | null
+          thumbnail?: string | null
           is_published?: boolean
           display_order?: number
           created_at?: string
@@ -57,10 +57,10 @@ export interface Database {
         Update: {
           id?: string
           title?: string
-          description?: string
+          description?: string | null
           category_id?: string | null
-          images?: Json
-          thumbnail?: string
+          images?: Json | null
+          thumbnail?: string | null
           is_published?: boolean
           display_order?: number
           created_at?: string
@@ -72,7 +72,7 @@ export interface Database {
           id: string
           name: string
           email: string
-          project_type: string
+          project_type: string | null
           message: string
           is_read: boolean
           created_at: string
@@ -81,7 +81,7 @@ export interface Database {
           id?: string
           name: string
           email: string
-          project_type?: string
+          project_type?: string | null
           message: string
           is_read?: boolean
           created_at?: string
@@ -90,7 +90,7 @@ export interface Database {
           id?: string
           name?: string
           email?: string
-          project_type?: string
+          project_type?: string | null
           message?: string
           is_read?: boolean
           created_at?: string

@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Admin Dashboard">
+    <section class="admin-dashboard-section">
+        <div class="container admin-dashboard-container">
+            <h1 class="heading-2 text-center mb-xl">Welcome to your Dashboard, Admin!</h1>
+            <p class="text-center text-neutral-600 mb-2xl">
+                This is your control panel for Divinex Agency.
+            </p>
+            <div class="admin-nav-links">
+                <a href="/admin/projects" class="admin-link-card">
+                    <i class="fa-solid fa-folder-open admin-icon"></i>
+                    <span>Manage Projects</span>
+                </a>
+                <a href="/admin/messages" class="admin-link-card">
+                    <i class="fa-solid fa-envelope-open-text admin-icon"></i>
+                    <span>View Messages (Future)</span>
+                </a>
+                <a href="/admin/logout" class="admin-link-card logout-link">
+                    <i class="fa-solid fa-right-from-bracket admin-icon"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</Layout>
+
+<style>
+    .admin-dashboard-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 5rem); /* Adjust for navbar height */
+        background-color: var(--color-neutral-50);
+        padding: var(--spacing-3xl) 0;
+    }
+    .admin-dashboard-container {
+        max-width: 800px;
+        background-color: var(--color-background-light);
+        padding: var(--spacing-xl) var(--spacing-3xl);
+        border-radius: var(--spacing-lg);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    .admin-nav-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-3xl);
+    }
+    .admin-link-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-xl);
+        background-color: var(--color-neutral-100);
+        border-radius: var(--spacing-md);
+        text-decoration: none;
+        color: var(--color-text-dark);
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+    }
+    .admin-link-card:hover {
+        background-color: var(--color-brand-secondary);
+        color: var(--color-brand-primary);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        transform: translateY(-5px);
+    }
+    .admin-link-card .admin-icon {
+        font-size: 2.5rem;
+        color: var(--color-text-medium);
+        transition: color 0.3s ease;
+    }
+    .admin-link-card:hover .admin-icon {
+        color: var(--color-brand-primary);
+    }
+    .admin-link-card span {
+        font-weight: 600;
+        font-size: 1.125rem;
+    }
+    .logout-link {
+        background-color: var(--color-coral-200);
+        color: var(--color-coral-700);
+    }
+    .logout-link:hover {
+        background-color: var(--color-coral-300);
+        color: var(--color-coral-800);
+    }
+    .logout-link:hover .admin-icon {
+        color: var(--color-coral-800);
+    }
+</style>

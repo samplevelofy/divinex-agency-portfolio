@@ -1,0 +1,16 @@
+---
+import { supabase } from '../../lib/supabase';
+
+// This is a server-only action for logout
+try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error("Logout Error:", error.message);
+    }
+} catch (error) {
+    console.error("Logout Catch Error:", error);
+}
+
+// Always redirect to login page after logout attempt
+return Astro.redirect('/admin/login');
+---
