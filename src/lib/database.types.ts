@@ -29,14 +29,13 @@ export interface Database {
           created_at?: string
         }
       }
-      projects: {
+      projects: { // Simplified Project Schema
         Row: {
           id: string
           title: string
           description: string | null
+          image_url: string | null // Single image URL
           category_id: string | null
-          images: Json | null
-          thumbnail: string | null
           is_published: boolean
           display_order: number
           created_at: string
@@ -46,9 +45,8 @@ export interface Database {
           id?: string
           title: string
           description?: string | null
+          image_url?: string | null
           category_id?: string | null
-          images?: Json | null
-          thumbnail?: string | null
           is_published?: boolean
           display_order?: number
           created_at?: string
@@ -58,42 +56,12 @@ export interface Database {
           id?: string
           title?: string
           description?: string | null
+          image_url?: string | null
           category_id?: string | null
-          images?: Json | null
-          thumbnail?: string | null
           is_published?: boolean
           display_order?: number
           created_at?: string
           updated_at?: string
-        }
-      }
-      contact_submissions: {
-        Row: {
-          id: string
-          name: string
-          email: string
-          project_type: string | null
-          message: string
-          is_read: boolean
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          email: string
-          project_type?: string | null
-          message: string
-          is_read?: boolean
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          email?: string
-          project_type?: string | null
-          message?: string
-          is_read?: boolean
-          created_at?: string
         }
       }
     }
@@ -101,8 +69,7 @@ export interface Database {
 }
 
 export type Category = Database['public']['Tables']['categories']['Row'];
-export type Project = Database['public']['Tables']['projects']['Row'];
-export type ContactSubmission = Database['public']['Tables']['contact_submissions']['Row'];
+export type Project = Database['public']['Tables']['projects']['Row']; // Use our simplified Project type
 
 export type ProjectWithCategory = Project & {
   categories: Category | null;
