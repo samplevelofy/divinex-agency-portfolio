@@ -1,8 +1,9 @@
 ---
 // admin/projects/new.astro - Form to create a new project
-import Layout from '../../layouts/Layout.astro'; // <--- Path is correct relative to src/pages/admin/projects/
-import { supabase } from '../../../lib/supabase'; // <--- Path is correct relative to src/pages/admin/projects/new.astro
+import Layout from '../../../layouts/Layout.astro';
+import { supabase } from '../../../lib/supabase.ts';
 import type { Category } from '../../../lib/database.types';
+import { getOptimizedImageUrl } from '../../../lib/utils.ts';
 
 // Fetch categories for the dropdown
 let categories: Category[] = [];
@@ -36,10 +37,14 @@ if (Astro.request.method === 'POST') {
 
         // --- Image Upload Logic ---
         if (imageFile && imageFile.size > 0) {
+            // <--- CHANGE START: Use Astro.url.origin to create absolute URL
+            const uploadApiUrl = `${Astro.url.origin}/api/admin/projects/upload`;
+            console.log('Attempting image upload to ABSOLUTE URL:', uploadApiUrl);
+            // <--- CHANGE END
             const uploadFormData = new FormData();
             uploadFormData.append('file', imageFile);
 
-            const uploadResponse = await fetch('/api/admin/projects/upload', {
+            const uploadResponse = await fetch(uploadApiUrl, {
                 method: 'POST',
                 body: uploadFormData,
             });
@@ -50,6 +55,7 @@ if (Astro.request.method === 'POST') {
             }
             const uploadResult = await uploadResponse.json();
             imageUrl = uploadResult.url;
+            console.log('Image uploaded successfully. URL:', imageUrl);
         }
         // --- End Image Upload Logic ---
 
@@ -62,7 +68,11 @@ if (Astro.request.method === 'POST') {
             display_order: display_order ? parseInt(display_order) : 0,
         };
 
-        const response = await fetch('/api/admin/projects/create', {
+        // <--- CHANGE START: Use Astro.url.origin to create absolute URL
+        const createProjectApiUrl = `${Astro.url.origin}/api/admin/projects/create`;
+        console.log('Attempting to create project via ABSOLUTE URL:', createProjectApiUrl, 'with data:', projectData);
+        // <--- CHANGE END
+        const response = await fetch(createProjectApiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -77,6 +87,7 @@ if (Astro.request.method === 'POST') {
 
         message = 'Project created successfully!';
         messageType = 'success';
+        console.log('Project created successfully. Redirecting...');
         return Astro.redirect('/admin/projects');
 
     } catch (error: any) {

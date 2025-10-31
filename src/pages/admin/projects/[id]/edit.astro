@@ -1,8 +1,8 @@
 ---
 // admin/projects/[id]/edit.astro - Form to edit an existing project
-import Layout from '../../../layouts/Layout.astro'; // <--- Path is correct relative to src/pages/admin/projects/[id]/
-import { supabase } from '../../../../lib/supabase';
-import { getOptimizedImageUrl } from '../../../../lib/utils';
+import Layout from '../../../../layouts/Layout.astro';
+import { supabase } from '../../../../lib/supabase.ts';
+import { getOptimizedImageUrl } from '../../../../lib/utils.ts';
 import type { Project, Category } from '../../../../lib/database.types';
 
 const { id } = Astro.params; // Get project ID from URL
@@ -54,10 +54,14 @@ if (Astro.request.method === 'POST') {
         // --- Image Upload Logic ---
         const fileInput = formData.get('image') as File;
         if (fileInput && fileInput.size > 0) { // Check if a new file was uploaded
+            // <--- CHANGE START: Use Astro.url.origin to create absolute URL
+            const uploadApiUrl = `${Astro.url.origin}/api/admin/projects/upload`;
+            console.log('Attempting image upload for edit to ABSOLUTE URL:', uploadApiUrl);
+            // <--- CHANGE END
             const uploadFormData = new FormData();
             uploadFormData.append('file', fileInput);
 
-            const uploadResponse = await fetch('/api/admin/projects/upload', {
+            const uploadResponse = await fetch(uploadApiUrl, {
                 method: 'POST',
                 body: uploadFormData,
             });
@@ -68,6 +72,7 @@ if (Astro.request.method === 'POST') {
             }
             const uploadResult = await uploadResponse.json();
             imageUrl = uploadResult.url; // Use the newly uploaded URL
+            console.log('Image uploaded successfully for edit. URL:', imageUrl);
         }
         // --- End Image Upload Logic ---
 
@@ -81,7 +86,11 @@ if (Astro.request.method === 'POST') {
             display_order: display_order ? parseInt(display_order) : 0,
         };
 
-        const response = await fetch('/api/admin/projects/update', {
+        // <--- CHANGE START: Use Astro.url.origin to create absolute URL
+        const updateProjectApiUrl = `${Astro.url.origin}/api/admin/projects/update`;
+        console.log('Attempting to update project via ABSOLUTE URL:', updateProjectApiUrl, 'with data:', projectData);
+        // <--- CHANGE END
+        const response = await fetch(updateProjectApiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -96,6 +105,7 @@ if (Astro.request.method === 'POST') {
 
         message = 'Project updated successfully!';
         messageType = 'success';
+        console.log('Project updated successfully.');
         // Optionally redirect after success
         // return Astro.redirect('/admin/projects');
 
