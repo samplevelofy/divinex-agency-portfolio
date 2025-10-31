@@ -1,6 +1,6 @@
 ---
-// No Astro server-side logic needed for Hero component right now.
-// Client-side interactions are handled with vanilla JS.
+// Hero.astro - Final Version with improved scroll handling
+// All styles are in src/styles/globals.css
 ---
 
 <section id="home" class="hero-section">
@@ -29,7 +29,7 @@
           id="view-work-button"
           class="btn-primary"
         >
-          View My Work
+          View Our Work
         </button>
         <a
           href="#contact"
@@ -46,213 +46,44 @@
     class="scroll-down-button animate-bounce"
     aria-label="Scroll down"
   >
-    <i class="fa-solid fa-arrow-down"></i> {/* Lucide ArrowDown */}
+    <i class="fa-solid fa-arrow-down"></i>
   </button>
 </section>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+  // Ensure the script runs after the entire page (including all sections) is loaded.
+  // This is crucial for scroll-to-section links to find their targets.
+  document.addEventListener('astro:after-swap', setupHeroScroll); // For Astro's view transitions
+  document.addEventListener('DOMContentLoaded', setupHeroScroll); // For initial page load
+
+  function setupHeroScroll() {
+    console.log('Hero scroll script loaded and attempting to attach.');
+
     const viewWorkButton = document.getElementById('view-work-button');
     const scrollDownButton = document.getElementById('scroll-down-button');
+    const portfolioSection = document.getElementById('portfolio'); // Get reference to the portfolio section
 
-    const scrollToPortfolio = () => {
-      document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+    const scrollToPortfolio = (event: Event) => {
+      event.preventDefault();
+      if (portfolioSection) {
+        portfolioSection.scrollIntoView({ behavior: 'smooth' });
+        console.log('Scrolled to portfolio section.');
+      } else {
+        console.warn('Portfolio section with ID "portfolio" not found for scrolling (Hero).');
+      }
     };
 
-    if (viewWorkButton) {
-      viewWorkButton.addEventListener('click', scrollToPortfolio);
-    }
-    if (scrollDownButton) {
-      scrollDownButton.addEventListener('click', scrollToPortfolio);
-    }
-  });
+    // Remove existing listeners to prevent duplicates if function runs multiple times
+    if (viewWorkButton) viewWorkButton.removeEventListener('click', scrollToPortfolio);
+    if (scrollDownButton) scrollDownButton.removeEventListener('click', scrollToPortfolio);
+
+    // Add new listeners
+    if (viewWorkButton) viewWorkButton.addEventListener('click', scrollToPortfolio);
+    if (scrollDownButton) scrollDownButton.addEventListener('click', scrollToPortfolio);
+  }
+
+  // Initial call in case DOMContentLoaded already fired before script was evaluated
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setupHeroScroll();
+  }
 </script>
-
-<style>
-  .hero-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background-color: var(--color-neutral-50); /* from-neutral-50 */
-    background-image: linear-gradient(to bottom right, var(--color-neutral-50), var(--color-neutral-100)); /* to-neutral-100 */
-    overflow: hidden; /* absolute inset-0 overflow-hidden */
-  }
-
-  .hero-background-effects {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-
-  .hero-gradient-top-right {
-    position: absolute;
-    top: -50%; /* -top-1/2 */
-    right: -50%; /* -right-1/2 */
-    width: 100%; /* w-full */
-    height: 100%; /* h-full */
-    background-image: linear-gradient(to bottom right, rgba(255, 213, 204, 0.2), transparent); /* from-coral-200/20 to-transparent */
-    border-radius: 9999px; /* rounded-full */
-    filter: blur(48px); /* blur-3xl */
-  }
-
-  .hero-gradient-bottom-left {
-    position: absolute;
-    bottom: -50%; /* -bottom-1/2 */
-    left: -50%; /* -left-1/2 */
-    width: 100%; /* w-full */
-    height: 100%; /* h-full */
-    background-image: linear-gradient(to top right, rgba(255, 232, 227, 0.2), transparent); /* from-coral-100/20 to-transparent */
-    border-radius: 9999px; /* rounded-full */
-    filter: blur(48px); /* blur-3xl */
-  }
-
-  .hero-content {
-    padding-top: var(--spacing-xl); /* py-20 */
-    padding-bottom: var(--spacing-xl); /* py-20 */
-    position: relative;
-    z-index: 10;
-    text-align: center; /* max-w-4xl mx-auto text-center */
-  }
-
-  .hero-text-container {
-    max-width: 900px; /* max-w-4xl */
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-  }
-
-  .hero-tagline {
-    margin-bottom: var(--spacing-lg); /* mb-6 */
-    animation: fadeIn 0.8s ease-in; /* animate-fade-in */
-  }
-
-  .tagline-badge {
-    display: inline-block;
-    padding: var(--spacing-sm) var(--spacing-md); /* px-4 py-2 */
-    background-color: var(--color-coral-100);
-    color: var(--color-coral-700);
-    border-radius: 9999px; /* rounded-full */
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 500; /* font-medium */
-    margin-bottom: var(--spacing-lg); /* mb-6 */
-  }
-
-  .hero-title {
-    font-size: 4.5rem; /* text-6xl md:text-7xl lg:text-8xl */
-    line-height: 1;
-    font-weight: 700; /* font-bold */
-    margin-bottom: var(--spacing-lg); /* mb-6 */
-    color: var(--color-neutral-900); /* text-neutral-900 */
-    animation: slideUp 0.6s ease-out; /* animate-slide-up */
-  }
-
-  @media (min-width: 768px) {
-    .hero-title {
-      font-size: 5rem; /* md:text-7xl */
-    }
-  }
-  @media (min-width: 1024px) {
-    .hero-title {
-      font-size: 6rem; /* lg:text-8xl */
-    }
-  }
-
-  .hero-title-accent {
-    display: block; /* block */
-    color: var(--color-coral-500); /* text-coral-500 */
-  }
-
-  .hero-description {
-    font-size: 1.25rem; /* text-xl md:text-2xl */
-    color: var(--color-neutral-600); /* text-neutral-600 */
-    margin-bottom: var(--spacing-2xl); /* mb-12 */
-    max-width: 600px; /* max-w-2xl */
-    margin-left: auto;
-    margin-right: auto;
-    animation: slideUp 0.8s ease-out 0.2s both; /* animate-slide-up-delay */
-  }
-
-  @media (min-width: 768px) {
-    .hero-description {
-      font-size: 1.5rem; /* md:text-2xl */
-    }
-  }
-
-  .hero-buttons {
-    display: flex;
-    flex-direction: column; /* flex-col */
-    gap: var(--spacing-md); /* gap-4 */
-    justify-content: center;
-    animation: fadeIn 1s ease-in 0.2s both; /* animate-fade-in-delay */
-  }
-
-  @media (min-width: 640px) { /* sm breakpoint */
-    .hero-buttons {
-      flex-direction: row; /* sm:flex-row */
-    }
-  }
-
-  .btn-primary, .btn-secondary {
-    padding: var(--spacing-md) var(--spacing-xl); /* px-8 py-4 */
-    border-radius: var(--spacing-sm); /* rounded-lg */
-    font-weight: 500; /* font-medium */
-    transition: all 0.3s ease; /* transition-all duration-300 */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-    border: 1px solid transparent; /* default border */
-    text-align: center;
-    text-decoration: none; /* Remove underline */
-    cursor: pointer;
-    display: inline-block; /* For the anchor tag */
-    transform: scale(1); /* For hover effect */
-  }
-
-  .btn-primary {
-    background-color: var(--color-coral-500);
-    color: var(--color-text-on-dark); /* text-white */
-  }
-  .btn-primary:hover {
-    background-color: var(--color-coral-600);
-    transform: scale(1.05); /* hover:scale-105 */
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
-  }
-
-  .btn-secondary {
-    background-color: var(--color-background-light); /* bg-white */
-    color: var(--color-neutral-900); /* text-neutral-900 */
-    border-color: var(--color-neutral-200); /* border border-neutral-200 */
-  }
-  .btn-secondary:hover {
-    background-color: var(--color-neutral-50); /* hover:bg-neutral-50 */
-    transform: scale(1.05); /* hover:scale-105 */
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
-  }
-
-  .scroll-down-button {
-    position: absolute;
-    bottom: var(--spacing-xl); /* bottom-8 */
-    left: 50%;
-    transform: translateX(-50%); /* -translate-x-1/2 */
-    animation: bounce 1s infinite; /* animate-bounce */
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-neutral-400); /* text-neutral-400 */
-  }
-  .scroll-down-button i {
-    width: var(--spacing-lg); /* w-6 */
-    height: var(--spacing-lg); /* h-6 */
-  }
-
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(-25%) translateX(-50%);
-      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-    }
-    50% {
-      transform: translateY(0) translateX(-50%);
-      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    }
-  }
-</style>

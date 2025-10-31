@@ -1,11 +1,12 @@
 ---
-// No Astro server-side logic needed for Services component right now.
+// Services.astro - Final Version
+// All styles are in src/styles/globals.css
 ---
 
 <section id="services" class="services-section">
   <div class="container">
     <div class="text-center section-header">
-      <h2 class="heading-2">What We Do</h2> {/* Changed "What I Do" to "What We Do" for agency voice */}
+      <h2 class="heading-2">What We Do</h2>
       <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
         Specialized design services to elevate your brand and connect with your audience
       </p>
@@ -14,7 +15,7 @@
     <div class="services-grid">
       <div class="service-item group">
         <div class="service-icon-wrapper">
-          <i class="fa-solid fa-palette service-icon"></i> {/* Lucide Palette */}
+          <i class="fa-solid fa-palette service-icon"></i>
         </div>
         <h3 class="service-title">Branding</h3>
         <p class="service-description">Complete brand identity design including color palettes, typography, and brand guidelines that tell your unique story.</p>
@@ -22,7 +23,7 @@
 
       <div class="service-item group">
         <div class="service-icon-wrapper">
-          <i class="fa-solid fa-layer-group service-icon"></i> {/* Lucide Layers */}
+          <i class="fa-solid fa-layer-group service-icon"></i>
         </div>
         <h3 class="service-title">Logo Design</h3>
         <p class="service-description">Memorable and versatile logos that capture your brand essence and work across all mediums and applications.</p>
@@ -30,7 +31,7 @@
 
       <div class="service-item group">
         <div class="service-icon-wrapper">
-          <i class="fa-solid fa-credit-card service-icon"></i> {/* Lucide CreditCard */}
+          <i class="fa-solid fa-credit-card service-icon"></i>
         </div>
         <h3 class="service-title">Business Cards</h3>
         <p class="service-description">Professional business card design that makes a lasting first impression and perfectly represents your brand.</p>
@@ -38,7 +39,7 @@
 
       <div class="service-item group">
         <div class="service-icon-wrapper">
-          <i class="fa-solid fa-share-nodes service-icon"></i> {/* Lucide Share2 */}
+          <i class="fa-solid fa-share-nodes service-icon"></i>
         </div>
         <h3 class="service-title">Social Media</h3>
         <p class="service-description">Eye-catching social media graphics and templates that engage your audience and maintain brand consistency.</p>
@@ -46,96 +47,3 @@
     </div>
   </div>
 </section>
-
-<style>
-  .services-section {
-    background-color: var(--color-background-light); /* bg-white */
-  }
-
-  .section-header {
-    margin-bottom: var(--spacing-4xl); /* mb-16 */
-  }
-  .heading-2 {
-    font-size: 2.5rem; /* text-4xl */
-    line-height: 1.2;
-    font-weight: 700; /* font-bold */
-    color: var(--color-text-dark); /* text-neutral-900 */
-    margin-bottom: var(--spacing-md); /* mb-4 */
-    text-align: center;
-  }
-  @media (min-width: 768px) {
-    .heading-2 {
-      font-size: 3rem; /* md:text-5xl */
-    }
-  }
-
-  .text-xl { font-size: 1.25rem; }
-  .text-neutral-600 { color: var(--color-neutral-600); }
-  .max-w-2xl { max-width: 42rem; /* 672px */ }
-  .mx-auto { margin-left: auto; margin-right: auto; }
-
-  .services-grid {
-    display: grid;
-    gap: var(--spacing-xl); /* gap-8 */
-  }
-  @media (min-width: 768px) {
-    .services-grid {
-      grid-template-columns: repeat(2, 1fr); /* md:grid-cols-2 */
-    }
-  }
-  @media (min-width: 1024px) {
-    .services-grid {
-      grid-template-columns: repeat(4, 1fr); /* lg:grid-cols-4 */
-    }
-  }
-
-  .service-item {
-    padding: var(--spacing-xl); /* p-8 */
-    border-radius: var(--spacing-xl); /* rounded-2xl */
-    background-color: var(--color-neutral-50); /* bg-neutral-50 */
-    transition: all 0.3s ease; /* transition-all duration-300 */
-  }
-  .service-item:hover {
-    background-color: var(--color-coral-50); /* hover:bg-coral-50 */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-xl */
-    transform: translateY(-8px); /* hover:-translate-y-2 */
-  }
-
-  .service-icon-wrapper {
-    width: var(--spacing-3xl); /* w-14 */
-    height: var(--spacing-3xl); /* h-14 */
-    background-color: var(--color-coral-100);
-    border-radius: var(--spacing-md); /* rounded-xl */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: var(--spacing-lg); /* mb-6 */
-    transition: background-color 0.3s ease;
-  }
-  .service-item:hover .service-icon-wrapper {
-    background-color: var(--color-brand-primary); /* group-hover:bg-coral-500 */
-  }
-
-  .service-icon {
-    width: var(--spacing-lg); /* w-7 */
-    height: var(--spacing-lg); /* h-7 */
-    color: var(--color-coral-600);
-    transition: color 0.3s ease;
-  }
-  .service-item:hover .service-icon {
-    color: var(--color-text-on-dark); /* group-hover:text-white */
-  }
-
-  .service-title {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: 700; /* font-bold */
-    color: var(--color-text-dark); /* text-neutral-900 */
-    margin-top: 0; /* Override default h3 margin */
-    margin-bottom: var(--spacing-sm); /* mb-3 */
-  }
-
-  .service-description {
-    color: var(--color-neutral-600); /* text-neutral-600 */
-    line-height: 1.625; /* leading-relaxed */
-  }
-</style>

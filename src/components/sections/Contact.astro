@@ -1,172 +1,33 @@
 ---
-// No Astro server-side logic needed for Contact component.
+// Contact.astro - Final Simplified Version
+// All styles are in src/styles/globals.css
 ---
 
 <section id="contact" class="contact-section">
   <div class="container">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center section-header">
-        <h2 class="heading-2">Let's Work Together</h2>
-        <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
-          Have a project in mind? We'd love to hear about it. Reach out to us through our social media or email.
-        </p>
-      </div>
+    <div class="text-center section-header">
+      <h2 class="heading-2">Let's Work Together</h2>
+      <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
+        Have a project in mind? We'd love to hear about it. Reach out via email or social media.
+      </p>
+    </div>
 
-      <div class="contact-grid-simple"> {/* New class for simpler layout */}
-        <div class="contact-info-block">
-          <div class="contact-info-item">
-            <div class="contact-icon-wrapper">
-              <i class="fa-solid fa-envelope contact-icon"></i> {/* Lucide Mail */}
-            </div>
-            <div>
-              <h3 class="contact-info-title">Email Us</h3>
-              <a href="mailto:hello@divinex.com" class="contact-info-link">hello@divinex.com</a> {/* mailto link */}
-            </div>
-          </div>
-
-          <div class="contact-info-item">
-            <div class="contact-icon-wrapper">
-              <i class="fa-solid fa-message contact-icon"></i> {/* Lucide MessageSquare */}
-            </div>
-            <div>
-              <h3 class="contact-info-title">Follow Us</h3>
-              <div class="social-links-list">
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-link"
-                >
-                  Instagram
-                </a>
-                <span class="social-link-separator">•</span>
-                <a
-                  href="https://behance.net"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-link"
-                >
-                  Behance
-                </a>
-                <span class="social-link-separator">•</span>
-                <a
-                  href="https://dribbble.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-link"
-                >
-                  Dribbble
-                </a>
-              </div>
-            </div>
-          </div>
+    <div class="contact-container">
+        <div class="contact-card">
+            <i class="fa-solid fa-envelope contact-icon"></i>
+            <h3>Email Us</h3>
+            <a href="mailto:hello@divinex.com" class="contact-link">hello@divinex.com</a>
         </div>
-        {/* Removed the contact form entirely */}
-      </div>
+        <div class="contact-card">
+            <i class="fa-brands fa-instagram contact-icon"></i>
+            <h3>Instagram</h3>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="contact-link">@divinex_agency</a>
+        </div>
+        <div class="contact-card">
+             <i class="fa-brands fa-behance contact-icon"></i>
+            <h3>Behance</h3>
+            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" class="contact-link">Divinex Portfolio</a>
+        </div>
     </div>
   </div>
 </section>
-
-<style>
-  .contact-section {
-    background-color: var(--color-neutral-50); /* bg-neutral-50 */
-  }
-
-  .max-w-4xl { max-width: 56rem; /* 896px */ }
-  .mx-auto { margin-left: auto; margin-right: auto; }
-
-  .section-header {
-    margin-bottom: var(--spacing-4xl); /* mb-16 */
-  }
-  .heading-2 {
-    font-size: 2.5rem; /* text-4xl */
-    line-height: 1.2;
-    font-weight: 700; /* font-bold */
-    color: var(--color-text-dark); /* text-neutral-900 */
-    margin-bottom: var(--spacing-md); /* mb-4 */
-    text-align: center;
-  }
-  @media (min-width: 768px) {
-    .heading-2 {
-      font-size: 3rem; /* md:text-5xl */
-    }
-  }
-
-  .text-xl { font-size: 1.25rem; }
-  .text-neutral-600 { color: var(--color-neutral-600); }
-  .max-w-2xl { max-width: 42rem; /* 672px */ }
-
-  .contact-grid-simple { /* Adjusted for single column */
-    display: flex;
-    justify-content: center;
-    margin-bottom: var(--spacing-2xl); /* mb-12 */
-  }
-
-  .contact-info-block {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg); /* space-y-6 */
-    max-width: 400px; /* Constrain width for a cleaner look */
-    width: 100%;
-  }
-
-  .contact-info-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-md); /* gap-4 */
-  }
-
-  .contact-icon-wrapper {
-    width: var(--spacing-3xl); /* w-12 */
-    height: var(--spacing-3xl); /* h-12 */
-    background-color: var(--color-coral-100);
-    border-radius: var(--spacing-md); /* rounded-xl */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .contact-icon {
-    width: var(--spacing-lg); /* w-6 */
-    height: var(--spacing-lg); /* h-6 */
-    color: var(--color-coral-500);
-  }
-
-  .contact-info-title {
-    font-weight: 700; /* font-bold */
-    color: var(--color-text-dark); /* text-neutral-900 */
-    margin-top: 0;
-    margin-bottom: var(--spacing-sm); /* mb-2 */
-    font-size: 1rem;
-  }
-  .contact-info-text {
-    color: var(--color-neutral-600); /* text-neutral-600 */
-    margin-bottom: 0; /* Remove default p margin */
-    line-height: 1.5;
-  }
-  .contact-info-link { /* Style for mailto link */
-    color: var(--color-brand-primary);
-    text-decoration: underline;
-    word-break: break-all; /* Prevent long emails from overflowing */
-  }
-  .contact-info-link:hover {
-    color: var(--color-coral-600);
-  }
-
-
-  .social-links-list {
-    display: flex;
-    gap: var(--spacing-xs); /* gap-3 */
-    align-items: center;
-  }
-  .social-link {
-    color: var(--color-neutral-600); /* text-neutral-600 */
-    transition: color 0.15s ease;
-  }
-  .social-link:hover {
-    color: var(--color-brand-primary); /* hover:text-coral-500 */
-  }
-  .social-link-separator {
-    color: var(--color-neutral-300);
-  }
-</style>

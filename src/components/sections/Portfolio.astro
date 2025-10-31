@@ -1,20 +1,20 @@
 ---
+// Portfolio.astro - Final Version with improved filtering
+// All styles are in src/styles/globals.css
 import { supabase } from '../../lib/supabase';
 import type { ProjectWithCategory, Category } from '../../lib/database.types';
 
 let categories: Category[] = [];
-let projects: ProjectWithCategory[] = [];
+let projects: any[] = [];
 let fetchError: string | null = null;
 
-// This section now ONLY attempts to fetch from Supabase.
-// If it fails, an error message will be displayed, and no projects.
 try {
     const { data: cats, error: catErr } = await supabase.from('categories').select('*').order('name');
     if (catErr) throw catErr;
     categories = cats || [];
 
     const { data: projs, error: projErr } = await supabase.from('projects')
-        .select('*, categories(*)')
+        .select('*, categories(name, slug)')
         .eq('is_published', true)
         .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
@@ -23,8 +23,11 @@ try {
 
 } catch (e: any) {
     console.error("Supabase fetch error (on page load):", e.message);
-    fetchError = e.message; // Capture error for display on page
-    // If an error occurs, projects array will remain empty.
+    fetchError = e.message;
+
+    // Fallback to empty if fetch fails
+    categories = [];
+    projects = [];
 }
 ---
 
@@ -35,105 +38,87 @@ try {
       <p class="text-xl text-neutral-600 max-w-2xl mx-auto">Recent projects showcasing our creative solutions.</p>
     </div>
 
-    {fetchError && <p class="text-center text-red-500 mb-4">Error loading projects from Supabase: {fetchError}<br/>Please check Codespace network or Supabase connection.</p>}
+    {fetchError ? (
+      <p class="text-center text-red-500 mb-4">Error loading projects from Supabase: {fetchError}<br/>Please check Codespace network or Supabase connection. (No projects are currently loaded.)</p>
+    ) : (
+        <div class="category-filter-buttons" id="category-filters">
+          <button class="filter-button active" data-slug="all">All</button>
+          {categories.map((cat) => (
+            <button class="filter-button" data-slug={cat.slug}>{cat.name}</button>
+          ))}
+        </div>
+    )}
 
-    <div class="category-filter-buttons" id="category-filters">
-      <button class="filter-button active" data-slug="all">All</button>
-      {categories.map((cat) => (
-        <button class="filter-button" data-slug={cat.slug}>{cat.name}</button>
-      ))}
-    </div>
-
-    {projects.length === 0 ? (
-      <div class="text-center py-xl text-neutral-500">
-        {fetchError ? 'No projects loaded due to error.' : 'No projects found. Check back soon!'}
-      </div>
+    {projects.length === 0 && !fetchError ? (
+      <p class="text-center text-neutral-500 text-lg">No projects found. Use the Admin panel to add your first project!</p>
     ) : (
       <div id="portfolio-grid" class="portfolio-grid">
         {projects.map((project) => (
-          <a
-            href={`/project/${project.id}`}
-            class="project-card group"
-            data-category={project.categories?.slug || 'uncategorized'}
-          >
-            {project.thumbnail ? (
-              <img
-                src={project.thumbnail}
-                alt={project.title}
-                class="project-thumbnail"
-              />
-            ) : (
-              <div class="project-no-image-placeholder">
-                <span class="text-neutral-400">No image</span>
-              </div>
-            )}
-            <div class="project-card-overlay">
-              <h3 class="project-title-overlay">{project.title}</h3>
-              {project.categories && (
-                <span class="project-category-overlay">{project.categories.name}</span>
-              )}
-            </div>
-          </a>
+          <div class="project-card" data-category={project.categories?.slug || 'uncategorized'}>
+             {project.image_url ? <img src={project.image_url} alt={project.title} class="project-img" /> : <div class="no-image">No Image</div>}
+             <div class="project-info">
+                 <h3>{project.title}</h3>
+                 <span>{project.categories?.name || 'Uncategorized'}</span>
+             </div>
+             <p class="project-description">{project.description}</p>
+          </div>
         ))}
       </div>
     )}
   </div>
 </section>
 
-<script>
-    document.addEventListener('astro:page-load', () => {
-        console.log('Portfolio filter script loaded.');
+<script client:load>
+    console.log('--- Portfolio Filter Script Init ---');
+
+    // Function to setup filters and attach event listeners
+    function setupPortfolioFilters() {
+        console.log('Portfolio filter script loaded and attempting to attach listeners.');
 
         const filtersContainer = document.getElementById('category-filters');
+        const filterButtons = filtersContainer ? filtersContainer.querySelectorAll('.filter-button') : [];
         const portfolioGrid = document.getElementById('portfolio-grid');
 
-        if (!filtersContainer || !portfolioGrid) {
-            console.warn('Portfolio filter elements or grid not found. Filtering script cannot initialize fully.');
+        if (!filterButtons.length || !portfolioGrid) {
+            console.warn('Portfolio filter buttons or grid not found. Filtering script cannot fully initialize.');
             return;
         }
 
-        const filterButtons = filtersContainer.querySelectorAll('.filter-button');
-        const projectCards = portfolioGrid.querySelectorAll('.project-card');
-
         filterButtons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const clickedButton = event.currentTarget as HTMLElement;
-                const selectedSlug = clickedButton.dataset.slug;
-
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                clickedButton.classList.add('active');
-
-                projectCards.forEach(card => {
-                    const cardElement = card as HTMLElement;
-                    const cardCategory = cardElement.dataset.category;
-
-                    if (selectedSlug === 'all' || cardCategory === selectedSlug) {
-                        cardElement.style.display = 'block';
-                    } else {
-                        cardElement.style.display = 'none';
-                    }
-                });
-            });
+            // Ensure existing listeners are removed to prevent duplicates
+            button.removeEventListener('click', handleFilterClick);
+            button.addEventListener('click', handleFilterClick);
         });
-    });
+
+        function handleFilterClick(event: Event) {
+            const clickedButton = event.currentTarget as HTMLElement;
+            const selectedSlug = clickedButton.dataset.slug;
+
+            console.log('Filter button clicked:', selectedSlug);
+
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            clickedButton.classList.add('active');
+
+            portfolioGrid.querySelectorAll('.project-card').forEach(card => {
+                const cardElement = card as HTMLElement;
+                const cardCategory = cardElement.dataset.category;
+
+                console.log(`Card: ${cardCategory}, Selected: ${selectedSlug}`);
+
+                if (selectedSlug === 'all' || cardCategory === selectedSlug) {
+                    cardElement.style.display = 'block';
+                } else {
+                    cardElement.style.display = 'none';
+                }
+            });
+        }
+        console.log('--- Portfolio Filter Script Attached ---');
+    }
+
+    // Ensure the script runs only when the document is ready
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setupPortfolioFilters();
+    } else {
+        document.addEventListener('DOMContentLoaded', setupPortfolioFilters); // Fallback for timing issues
+    }
 </script>
-
-<style>
-  .portfolio-section { background: var(--color-background-light); }
-  .section-header { margin-bottom: var(--spacing-3xl); text-align: center; }
-  .heading-2 { font-size: 2.5rem; font-weight: 700; color: var(--color-text-dark); }
-  .text-xl { font-size: 1.25rem; color: var(--color-text-medium); }
-
-  .category-filter-buttons { display: flex; justify-content: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-xl); flex-wrap: wrap; }
-  .filter-button { padding: 0.5rem 1.5rem; border-radius: 999px; border: none; background: var(--color-neutral-100); color: var(--color-text-medium); cursor: pointer; transition: all 0.3s ease; font-weight: 500; }
-  .filter-button:hover, .filter-button.active { background: var(--color-brand-primary); color: white; }
-
-  .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg); }
-  .project-card { position: relative; border-radius: var(--spacing-md); overflow: hidden; aspect-ratio: 4/3; }
-  .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-  .project-card:hover .project-img { transform: scale(1.05); }
-  .project-info { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end; padding: var(--spacing-lg); color: white; }
-  .project-card:hover .project-info { opacity: 1; }
-  .project-info h3 { margin: 0; font-size: 1.5rem; color: white; }
-  .no-image { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--color-neutral-200); color: var(--color-neutral-500); }
-</style>

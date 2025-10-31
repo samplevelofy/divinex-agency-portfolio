@@ -1,30 +1,24 @@
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../../lib/supabase';
-// getAuthenticatedUser is not imported as per current local development plan (static login)
 import type { Project } from '../../../../lib/database.types';
+
+// This API route is protected by src/middleware.ts (checks for admin_session_id cookie)
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // --- TEMPORARY: NO AUTHENTICATION CHECK FOR LOCAL DEV ---
-    // In a production setup, this would be guarded by proper authentication middleware
-    // const user = await getAuthenticatedUser();
-    // if (!user) { return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 }); }
-    // --- END TEMPORARY ---
-
     const body = await request.json();
-    const { title, description, thumbnail, images, category_id, is_published, display_order } = body;
+    const { title, description, image_url, category_id, is_published, display_order } = body;
 
     const newProject: Partial<Project> = {
         title,
         description: description || null,
-        thumbnail: thumbnail || null,
-        images: images || null,
+        image_url: image_url || null,
         category_id: category_id || null,
-        is_published: is_published === true, // Ensure it's a boolean
-        display_order: parseInt(display_order) || 0 // Ensure it's an integer
+        is_published: is_published === true,
+        display_order: parseInt(display_order) || 0
     };
 
-    // Cast the insert method to 'any' to bypass strict TypeScript inference if needed
+    // DEFINITIVE FIX: Apply 'as any' to the insert method call
     const { data, error } = await (supabase.from('projects').insert as any)([newProject]).select().single();
 
     if (error) throw error;

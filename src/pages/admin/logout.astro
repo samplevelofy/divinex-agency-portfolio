@@ -1,16 +1,10 @@
 ---
-import { supabase } from '../../lib/supabase';
+// admin/logout.astro - Clears session cookie
+import { Astro } from 'astro/runtime';
 
-// This is a server-only action for logout
-try {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.error("Logout Error:", error.message);
-    }
-} catch (error) {
-    console.error("Logout Catch Error:", error);
-}
+const ADMIN_SESSION_COOKIE = 'admin_session_id';
 
-// Always redirect to login page after logout attempt
+Astro.cookies.delete(ADMIN_SESSION_COOKIE, { path: '/admin' }); // Clear the cookie
+
 return Astro.redirect('/admin/login');
 ---

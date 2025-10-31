@@ -1,15 +1,12 @@
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../../lib/supabase';
-// getAuthenticatedUser is not imported as per current local development plan (static login)
+
+// This API route is protected by src/middleware.ts
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // --- TEMPORARY: NO AUTHENTICATION CHECK FOR LOCAL DEV ---
-    // const user = await getAuthenticatedUser();
-    // if (!user) { return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 }); }
-    // --- END TEMPORARY ---
+    const { id } = await request.json(); // No adminPassword needed in body
 
-    const { id } = await request.json();
     const { error } = await supabase.from('projects').delete().eq('id', id);
 
     if (error) throw error;
