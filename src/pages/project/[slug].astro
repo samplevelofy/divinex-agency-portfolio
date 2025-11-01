@@ -1,0 +1,187 @@
+---
+// src/pages/project/[slug].astro - Dynamic Project Detail Page
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase.ts';
+import { getOptimizedImageUrl } from '../../lib/utils.ts';
+import type { Project } from '../../lib/database.types';
+
+// This function generates the static paths for each project
+export async function getStaticPaths() {
+    try {
+        const { data: projects, error } = await supabase
+            .from('projects')
+            .select('slug')
+            .eq('is_published', true); // Only generate paths for published projects
+
+        if (error) {
+            console.error("Error fetching project slugs for static paths:", error);
+            return [];
+        }
+
+        if (!projects || projects.length === 0) {
+            console.warn("No published projects found to generate static paths.");
+            return [];
+        }
+
+        return projects.map((project) => ({
+            params: { slug: project.slug },
+        }));
+    } catch (e) {
+        console.error("Exception in getStaticPaths:", e);
+        return [];
+    }
+}
+
+// This function fetches data for the specific project based on the slug
+const { slug } = Astro.params;
+let project: Project | null = null;
+let fetchError: string | null = null;
+
+try {
+    const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('slug', slug)
+        .eq('is_published', true) // Ensure only published projects are viewable
+        .single();
+
+    if (error) {
+        // If error is "Row not found", it means project doesn't exist or isn't published
+        if (error.code === 'PGRST116') { // Specific Supabase code for "Row not found"
+            project = null; // Explicitly set to null for 404 handling
+        } else {
+            throw error;
+        }
+    }
+    project = data;
+
+} catch (e: any) {
+    console.error(`Error fetching project with slug "${slug}":`, e.message);
+    fetchError = e.message;
+}
+
+// Handle 404 Not Found if project is null
+if (!project) {
+    return Astro.redirect('/404', 302); // Redirect to a 404 page (create a 404.astro if you don't have one)
+}
+
+// Prepare gallery images (ensure it's an array for mapping)
+const galleryImages = project.gallery_image_urls || [];
+---
+
+<Layout title={project.title}>
+    <section class="project-detail-section">
+        <div class="container project-detail-container">
+            <a href="/#portfolio" class="back-to-portfolio">
+                <i class="fa-solid fa-arrow-left"></i> Back to Portfolio
+            </a>
+
+            <h1 class="heading-1 project-title">{project.title}</h1>
+            <p class="project-meta">
+                Client: {project.client_name || 'N/A'} | Category: {project.category_name || 'N/A'} | Services: {project.services_provided || 'N/A'}
+            </p>
+
+            {project.image_url && (
+                <img src={getOptimizedImageUrl(project.image_url)} alt={project.title} class="project-main-image" />
+            )}
+
+            <div class="project-description-block">
+                <h2 class="heading-2">Project Overview</h2>
+                <p class="project-long-description">{project.long_description || project.description || 'No detailed description available.'}</p>
+            </div>
+
+            {galleryImages.length > 0 && (
+                <div class="project-gallery">
+                    <h2 class="heading-2">Gallery</h2>
+                    <div class="gallery-grid">
+                        {galleryImages.map(imgUrl => (
+                            <img src={getOptimizedImageUrl(imgUrl)} alt={`${project.title} gallery image`} />
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    </section>
+</Layout>
+
+<style>
+    .project-detail-section {
+        background-color: var(--color-background-light);
+        padding-top: var(--spacing-5xl);
+        padding-bottom: var(--spacing-5xl);
+    }
+    .project-detail-container {
+        max-width: 900px;
+        margin-inline: auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+    .back-to-portfolio {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        color: var(--color-text-medium);
+        text-decoration: none;
+        margin-bottom: var(--spacing-lg);
+        transition: color 0.2s ease;
+    }
+    .back-to-portfolio:hover {
+        color: var(--color-brand-primary);
+        text-decoration: underline;
+    }
+    .project-title {
+        font-size: 3rem;
+        color: var(--color-text-dark);
+        margin-bottom: var(--spacing-sm);
+    }
+    .project-meta {
+        font-size: 1rem;
+        color: var(--color-neutral-600);
+        margin-bottom: var(--spacing-xl);
+        font-weight: 500;
+    }
+    .project-main-image {
+        width: 100%;
+        height: auto;
+        border-radius: var(--spacing-md);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        margin-bottom: var(--spacing-2xl);
+        object-fit: cover;
+    }
+    .project-description-block {
+        margin-bottom: var(--spacing-3xl);
+    }
+    .project-description-block h2, .project-gallery h2 {
+        font-size: 2rem;
+        color: var(--color-text-dark);
+        margin-bottom: var(--spacing-md);
+        border-bottom: 2px solid var(--color-border);
+        padding-bottom: var(--spacing-sm);
+    }
+    .project-long-description {
+        font-size: 1.125rem;
+        line-height: 1.7;
+        color: var(--color-neutral-700);
+    }
+    .project-gallery {
+        margin-top: var(--spacing-3xl);
+    }
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-xl);
+    }
+    .gallery-grid img {
+        width: 100%;
+        height: 200px; /* Fixed height for gallery images */
+        object-fit: cover;
+        border-radius: var(--spacing-sm);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    .gallery-grid img:hover {
+        transform: scale(1.03);
+    }
+</style>

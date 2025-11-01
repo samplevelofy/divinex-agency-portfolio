@@ -1,5 +1,5 @@
 ---
-// Contact.astro - Final Simplified Version
+// Contact.astro - Final Simplified Version (Clickable Cards)
 // All styles are in src/styles/globals.css
 ---
 
@@ -13,21 +13,26 @@
     </div>
 
     <div class="contact-container">
-        <div class="contact-card">
+        {/* EMAIL CARD */}
+        <a href="mailto:bereketdesigns@gmail.com" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer"> {/* <--- Entire card is now a link */}
             <i class="fa-solid fa-envelope contact-icon"></i>
             <h3>Email Us</h3>
-            <a href="mailto:hello@divinex.com" class="contact-link">hello@divinex.com</a>
-        </div>
-        <div class="contact-card">
+            <span class="contact-link-text">bereketdesigns@gmail.com</span> {/* <--- Text inside span to allow card link */}
+        </a>
+        
+        {/* INSTAGRAM CARD */}
+        <a href="https://www.instagram.com/bereketdesigns/" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer"> {/* <--- Entire card is now a link */}
             <i class="fa-brands fa-instagram contact-icon"></i>
             <h3>Instagram</h3>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="contact-link">@divinex_agency</a>
-        </div>
-        <div class="contact-card">
-             <i class="fa-brands fa-behance contact-icon"></i>
-            <h3>Behance</h3>
-            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" class="contact-link">Divinex Portfolio</a>
-        </div>
+            <span class="contact-link-text">@bereketdesigns</span> {/* <--- Text inside span */}
+        </a>
+        
+        {/* Telegram CARD */}
+        <a href="https://t.me/bereketdesigns" target="_blank" rel="noopener noreferrer" class="contact-card contact-card-link"> {/* <--- MODIFIED LINK */}
+            <i class="fa-brands fa-telegram contact-icon"></i> {/* <--- MODIFIED ICON */}
+            <h3>Telegram</h3> {/* <--- MODIFIED TEXT */}
+            <span class="contact-link-text">@bereketdesigns</span> {/* <--- MODIFIED TEXT */}
+        </a>
     </div>
   </div>
 </section>

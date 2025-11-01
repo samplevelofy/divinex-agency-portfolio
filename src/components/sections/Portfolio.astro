@@ -1,32 +1,34 @@
 ---
-// Portfolio.astro - Final Version with improved filtering
+// Portfolio.astro - Public-facing Portfolio Section (Clickable Cards)
 // All styles are in src/styles/globals.css
-import { supabase } from '../../lib/supabase';
-import type { ProjectWithCategory, Category } from '../../lib/database.types';
+import { supabase } from '../../lib/supabase.ts';
+import type { Project } from '../../lib/database.types'; // Using the updated Project type
 
-let categories: Category[] = [];
-let projects: any[] = [];
+let displayCategories: { name: string, slug: string }[] = [];
+let projects: Project[] = []; // Use the updated Project type
 let fetchError: string | null = null;
 
 try {
-    const { data: cats, error: catErr } = await supabase.from('categories').select('*').order('name');
-    if (catErr) throw catErr;
-    categories = cats || [];
-
     const { data: projs, error: projErr } = await supabase.from('projects')
-        .select('*, categories(name, slug)')
+        .select('*') // Select all columns, now including new ones
         .eq('is_published', true)
         .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
     if (projErr) throw projErr;
     projects = projs || [];
 
+    // Dynamically generate categories for filters from fetched projects' category_name
+    const uniqueCategoryNames = Array.from(new Set(projects.map(p => p.category_name).filter(Boolean))) as string[];
+    displayCategories = uniqueCategoryNames.map(name => ({
+        name: name,
+        slug: name.toLowerCase().replace(/\s+/g, '-') // Create a URL-friendly slug
+    }));
+
 } catch (e: any) {
     console.error("Supabase fetch error (on page load):", e.message);
     fetchError = e.message;
 
-    // Fallback to empty if fetch fails
-    categories = [];
+    displayCategories = [];
     projects = [];
 }
 ---
@@ -39,86 +41,108 @@ try {
     </div>
 
     {fetchError ? (
-      <p class="text-center text-red-500 mb-4">Error loading projects from Supabase: {fetchError}<br/>Please check Codespace network or Supabase connection. (No projects are currently loaded.)</p>
+      <p class="text-center text-red-500 mb-4">Error loading projects from Supabase: {fetchError}<br/>Please check network or Supabase connection. (No projects are currently loaded.)</p>
     ) : (
         <div class="category-filter-buttons" id="category-filters">
           <button class="filter-button active" data-slug="all">All</button>
-          {categories.map((cat) => (
+          {displayCategories.map((cat) => (
             <button class="filter-button" data-slug={cat.slug}>{cat.name}</button>
           ))}
         </div>
     )}
 
     {projects.length === 0 && !fetchError ? (
-      <p class="text-center text-neutral-500 text-lg">No projects found. Use the Admin panel to add your first project!</p>
+      <p class="text-center text-neutral-500 text-lg">No projects found. Add projects directly in your Supabase database.</p>
     ) : (
       <div id="portfolio-grid" class="portfolio-grid">
         {projects.map((project) => (
-          <div class="project-card" data-category={project.categories?.slug || 'uncategorized'}>
-             {project.image_url ? <img src={project.image_url} alt={project.title} class="project-img" /> : <div class="no-image">No Image</div>}
-             <div class="project-info">
-                 <h3>{project.title}</h3>
-                 <span>{project.categories?.name || 'Uncategorized'}</span>
-             </div>
-             <p class="project-description">{project.description}</p>
-          </div>
+          <a href={`/project/${project.slug}`} class="project-card-link"> {/* <--- MODIFIED: Wrapped card in <a> tag */}
+            <div class="project-card" data-category={project.category_name?.toLowerCase().replace(/\s+/g, '-') || 'uncategorized'}>
+               {project.image_url ? <img src={project.image_url} alt={project.title} class="project-img" /> : <div class="no-image">No Image</div>}
+               <div class="project-info">
+                   <h3>{project.title}</h3>
+                   <span>{project.category_name || 'Uncategorized'}</span>
+               </div>
+            </div>
+          </a>
         ))}
       </div>
     )}
   </div>
 </section>
 
-<script client:load>
-    console.log('--- Portfolio Filter Script Init ---');
+<script>
+    console.log('--- Portfolio Filter Script Init (Attempt 6) ---'); // Updated attempt number
 
-    // Function to setup filters and attach event listeners
     function setupPortfolioFilters() {
-        console.log('Portfolio filter script loaded and attempting to attach listeners.');
+        console.log('setupPortfolioFilters function called.');
 
         const filtersContainer = document.getElementById('category-filters');
-        const filterButtons = filtersContainer ? filtersContainer.querySelectorAll('.filter-button') : [];
         const portfolioGrid = document.getElementById('portfolio-grid');
 
-        if (!filterButtons.length || !portfolioGrid) {
-            console.warn('Portfolio filter buttons or grid not found. Filtering script cannot fully initialize.');
+        if (!filtersContainer || !portfolioGrid) {
+            console.warn('Portfolio filter elements or grid not found. Filtering script cannot fully initialize.');
             return;
         }
 
-        filterButtons.forEach(button => {
-            // Ensure existing listeners are removed to prevent duplicates
-            button.removeEventListener('click', handleFilterClick);
-            button.addEventListener('click', handleFilterClick);
-        });
+        filtersContainer.removeEventListener('click', handleFilterClick);
+        filtersContainer.addEventListener('click', handleFilterClick);
+        console.log('Event listener attached to #category-filters.');
 
         function handleFilterClick(event: Event) {
-            const clickedButton = event.currentTarget as HTMLElement;
-            const selectedSlug = clickedButton.dataset.slug;
+            const target = event.target as HTMLElement;
+            console.log('Click event detected. Target:', target);
 
-            console.log('Filter button clicked:', selectedSlug);
+            if (target.classList.contains('filter-button')) {
+                const selectedSlug = target.dataset.slug;
+                console.log('Filter button clicked. Selected slug:', selectedSlug);
 
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            clickedButton.classList.add('active');
+                filtersContainer.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                target.classList.add('active');
 
-            portfolioGrid.querySelectorAll('.project-card').forEach(card => {
-                const cardElement = card as HTMLElement;
-                const cardCategory = cardElement.dataset.category;
+                // Target the parent <a> tag, not the .project-card div directly for display
+                portfolioGrid.querySelectorAll('.project-card-link').forEach((linkElement, index) => {
+                    const cardElement = linkElement.querySelector('.project-card') as HTMLElement;
+                    if (!cardElement) return; // Ensure card is found
+                    const cardCategory = cardElement.dataset.category;
 
-                console.log(`Card: ${cardCategory}, Selected: ${selectedSlug}`);
+                    console.group(`Card #${index + 1} - ${cardElement.querySelector('h3')?.textContent || 'Untitled'}`);
+                    console.log(`Card's data-category: "${cardCategory}"`);
+                    console.log(`Selected filter slug: "${selectedSlug}"`);
 
-                if (selectedSlug === 'all' || cardCategory === selectedSlug) {
-                    cardElement.style.display = 'block';
-                } else {
-                    cardElement.style.display = 'none';
-                }
-            });
+                    if (selectedSlug === 'all' || cardCategory === selectedSlug) {
+                        linkElement.style.display = 'block'; // Hide/show the entire link element
+                        console.log('Setting display: block');
+                    } else {
+                        linkElement.style.display = 'none'; // Hide/show the entire link element
+                        console.log('Setting display: none');
+                    }
+                    console.log('Current display style after change:', linkElement.style.display);
+                    console.groupEnd();
+                });
+            } else {
+                console.log('Click was not on a filter button, or target is not a direct button.');
+            }
         }
         console.log('--- Portfolio Filter Script Attached ---');
     }
 
-    // Ensure the script runs only when the document is ready
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        setupPortfolioFilters();
-    } else {
-        document.addEventListener('DOMContentLoaded', setupPortfolioFilters); // Fallback for timing issues
-    }
+    setupPortfolioFilters();
+    
+    document.addEventListener('DOMContentLoaded', setupPortfolioFilters);
+    document.addEventListener('astro:after-swap', setupPortfolioFilters);
 </script>
+<style>
+  /* Add styles for the new project-card-link */
+  .portfolio-grid .project-card-link {
+    text-decoration: none !important; /* Ensure no underline on the entire link card */
+    color: inherit; /* Inherit text color */
+    display: block; /* Important for flex/grid and hide/show logic */
+  }
+  .portfolio-grid .project-card-link:hover .project-img {
+    transform: scale(1.05); /* Reapply image hover effect */
+  }
+  .portfolio-grid .project-card-link:hover .project-info {
+    opacity: 1; /* Reapply info hover effect */
+  }
+</style>

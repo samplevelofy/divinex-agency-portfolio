@@ -1,76 +1,30 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+// This file contains TypeScript types for your Supabase database tables.
+// It's manually updated to reflect your schema.
 
-export interface Database {
-  public: {
-    Tables: {
-      categories: {
-        Row: {
-          id: string
-          name: string
-          slug: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          slug: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          slug?: string
-          created_at?: string
-        }
-      }
-      projects: { // Simplified Project Schema
-        Row: {
-          id: string
-          title: string
-          description: string | null
-          image_url: string | null // Single image URL
-          category_id: string | null
-          is_published: boolean
-          display_order: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          title: string
-          description?: string | null
-          image_url?: string | null
-          category_id?: string | null
-          is_published?: boolean
-          display_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          title?: string
-          description?: string | null
-          image_url?: string | null
-          category_id?: string | null
-          is_published?: boolean
-          display_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-      }
-    }
-  }
-}
+// Type for the 'projects' table
+export type Project = {
+    id: string;
+    created_at: string;
+    updated_at: string | null;
+    title: string;
+    description: string | null;
+    image_url: string | null;
+    category_name: string | null;
+    is_published: boolean;
+    display_order: number;
+    
+    // <--- ADDED NEW COLUMNS BELOW --->
+    slug: string; // Crucial for detail page URLs
+    long_description: string | null;
+    gallery_image_urls: string[] | null; // Array of image URLs
+    client_name: string | null;
+    services_provided: string | null; // e.g., "Logo Design, Branding Strategy"
+};
 
-export type Category = Database['public']['Tables']['categories']['Row'];
-export type Project = Database['public']['Tables']['projects']['Row']; // Use our simplified Project type
-
+// Composite type (no longer joining categories, but keeping if you need it for old code references)
 export type ProjectWithCategory = Project & {
-  categories: Category | null;
+    categories: {
+        name: string;
+        slug: string;
+    } | null;
 };

@@ -1,5 +1,5 @@
 ---
-// Hero.astro - Final Version with improved scroll handling
+// Hero.astro - Final Version with correct "View Our Work" target
 // All styles are in src/styles/globals.css
 ---
 
@@ -11,10 +11,8 @@
 
   <div class="container hero-content">
     <div class="hero-text-container">
-      <div class="hero-tagline animate-fade-in">
-        <span class="tagline-badge">Graphic Designer</span>
-      </div>
-
+      {/* Badge is now a global floating element, removed from here */}
+      
       <h1 class="hero-title animate-slide-up">
         Creative
         <span class="hero-title-accent">Design Solutions</span>
@@ -51,38 +49,33 @@
 </section>
 
 <script>
-  // Ensure the script runs after the entire page (including all sections) is loaded.
-  // This is crucial for scroll-to-section links to find their targets.
-  document.addEventListener('astro:after-swap', setupHeroScroll); // For Astro's view transitions
-  document.addEventListener('DOMContentLoaded', setupHeroScroll); // For initial page load
+  document.addEventListener('astro:after-swap', setupHeroScroll);
+  document.addEventListener('DOMContentLoaded', setupHeroScroll);
 
   function setupHeroScroll() {
     console.log('Hero scroll script loaded and attempting to attach.');
 
     const viewWorkButton = document.getElementById('view-work-button');
     const scrollDownButton = document.getElementById('scroll-down-button');
-    const portfolioSection = document.getElementById('portfolio'); // Get reference to the portfolio section
+    const portfolioSection = document.getElementById('portfolio'); // <--- UPDATED: Scroll to #portfolio now
 
-    const scrollToPortfolio = (event: Event) => {
+    const scrollToTarget = (event: Event) => {
       event.preventDefault();
       if (portfolioSection) {
         portfolioSection.scrollIntoView({ behavior: 'smooth' });
-        console.log('Scrolled to portfolio section.');
+        console.log('Scrolled to portfolio section.'); // <--- UPDATED: Message
       } else {
-        console.warn('Portfolio section with ID "portfolio" not found for scrolling (Hero).');
+        console.warn('Portfolio section with ID "portfolio" not found for scrolling (Hero).'); // <--- UPDATED: Message
       }
     };
 
-    // Remove existing listeners to prevent duplicates if function runs multiple times
-    if (viewWorkButton) viewWorkButton.removeEventListener('click', scrollToPortfolio);
-    if (scrollDownButton) scrollDownButton.removeEventListener('click', scrollToPortfolio);
+    if (viewWorkButton) viewWorkButton.removeEventListener('click', scrollToTarget);
+    if (scrollDownButton) scrollDownButton.removeEventListener('click', scrollToTarget);
 
-    // Add new listeners
-    if (viewWorkButton) viewWorkButton.addEventListener('click', scrollToPortfolio);
-    if (scrollDownButton) scrollDownButton.addEventListener('click', scrollToPortfolio);
+    if (viewWorkButton) viewWorkButton.addEventListener('click', scrollToTarget);
+    if (scrollDownButton) scrollDownButton.addEventListener('click', scrollToTarget);
   }
 
-  // Initial call in case DOMContentLoaded already fired before script was evaluated
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
       setupHeroScroll();
   }

@@ -1,47 +1,36 @@
 ---
-// 404.astro - Custom Not Found page
 import Layout from '../layouts/Layout.astro';
 ---
-
-<Layout title="Page Not Found">
-    <section class="not-found-section">
-        <div class="container not-found-container">
-            <h1 class="heading-2 mb-md">404 - Page Not Found</h1>
-            <p class="text-xl text-neutral-600 mb-lg">Oops! The page you're looking for doesn't exist.</p>
-            <a href="/" class="btn-primary">Go to Homepage</a>
+<Layout title="404 Not Found">
+    <section class="error-section">
+        <div class="container">
+            <h1 class="heading-1">404 - Page Not Found</h1>
+            <p class="text-xl">Oops! The page you're looking for doesn't exist.</p>
+            <a href="/" class="btn-primary mt-xl">Go to Homepage</a>
         </div>
     </section>
-
     <style>
-        .not-found-section {
+        .error-section {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: var(--color-neutral-50);
+        }
+        .error-section .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - var(--spacing-4xl) - var(--spacing-5xl)); /* Adjust for navbar and footer */
-            text-align: center;
-            padding-block: var(--spacing-5xl);
-            background-color: var(--color-background-light);
+            gap: var(--spacing-lg);
         }
-        .not-found-container {
-            max-width: 600px;
-            padding: var(--spacing-xl);
-            border-radius: var(--spacing-lg);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            background-color: var(--color-neutral-50);
+        .error-section .heading-1 {
+            font-size: 4rem;
+            color: var(--color-brand-primary);
+            margin-bottom: var(--spacing-md);
         }
-        .btn-primary {
-            background-color: var(--color-brand-primary);
-            color: var(--color-text-on-dark);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-primary:hover {
-            background-color: var(--color-coral-600);
+        .error-section .text-xl {
+            color: var(--color-text-medium);
         }
     </style>
 </Layout>

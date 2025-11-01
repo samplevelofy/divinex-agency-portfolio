@@ -1,14 +1,15 @@
 ---
-import '../styles/globals.css'; // Your global styles with local Font Awesome import
+import '../styles/globals.css';
 import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
+import { ViewTransitions } from 'astro:transitions'; // <--- ADDED: Import ViewTransitions
 
 interface Props {
     title: string;
     description?: string;
 }
 
-const { title, description = 'Divinex Agency Portfolio specializing in branding, logo, and business card services.' } = Astro.props;
+const { title, description = 'Divinex Agency Portfolio showcasing branding, logo, and business card services.' } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -19,11 +20,43 @@ const { title, description = 'Divinex Agency Portfolio specializing in branding,
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} | Divinex Agency</title>
-    {/* No Font Awesome CDN link needed here, it's imported via globals.css */}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2jrdExoQ0sGUJzUjA/c2Z9W0/p8QzG5z4c2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
+    <ViewTransitions /> {/* <--- ADDED: ViewTransitions component for smooth navigation */}
     <Navbar />
     <slot />
     <Footer />
+
+    {/* Floating "Open for Work" badge */}
+    <div id="floating-open-for-work" class="floating-open-for-work">
+        <span class="tagline-badge">
+            <span class="glowing-dot"></span>
+            Open for Work
+        </span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', setupFloatingBadge);
+        document.addEventListener('astro:page-load', setupFloatingBadge);
+
+        function setupFloatingBadge() {
+            const floatingBadge = document.getElementById('floating-open-for-work');
+            
+            if (!floatingBadge) {
+                console.warn('Floating badge element not found.');
+                return;
+            }
+
+            floatingBadge.style.display = 'flex';
+            floatingBadge.style.opacity = '1';
+
+            console.log('Floating "Open for Work" badge set to always visible.');
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setupFloatingBadge();
+        }
+    </script>
 </body>
 </html>

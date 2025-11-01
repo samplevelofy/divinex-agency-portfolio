@@ -1,16 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/sections/Hero.astro';
-import About from '../components/sections/About.astro';
-import Services from '../components/sections/Services.astro';
-import Portfolio from '../components/sections/Portfolio.astro';
+import Services from '../components/sections/Services.astro'; {/* Moved Up */}
+import Portfolio from '../components/sections/Portfolio.astro'; {/* Moved Up */}
+import About from '../components/sections/About.astro'; {/* Moved Down */}
 import Contact from '../components/sections/Contact.astro';
+
 ---
 
-<Layout title="Divinex Agency">
+<Layout title="Home">
     <Hero />
-    <About />
-    <Services />
-    <Portfolio />
+    <Services /> {/* New Order */}
+    <Portfolio /> {/* New Order */}
+    <About /> {/* New Order */}
     <Contact />
 </Layout>

@@ -1,22 +1,21 @@
 ---
-// Navbar.astro - Final Version with improved public site navigation
+// Navbar.astro - Public-facing Navbar
 // All styles are in src/styles/globals.css
 ---
 
 <nav id="main-navbar" class="main-navbar">
     <div class="container navbar-inner-content">
         <a href="/" id="logo-link" class="navbar-logo-button" aria-label="Divinex Home">
-            <i class="fa-solid fa-palette navbar-logo-icon"></i>
-            <span class="navbar-logo-text">Divinex Agency</span>
+            
+            <span class="navbar-logo-text">Divine<span class="brand-x">x</span> Agency</span>
         </a>
 
         <div class="navbar-desktop-links">
             <a class="navbar-link" href="#home">Home</a>
-            <a class="navbar-link" href="#services">Services</a>
-            <a class="navbar-link" href="#portfolio">Portfolio</a>
-            <a class="navbar-link" href="#about">About</a>
+            <a class="navbar-link" href="#services">Services</a> {/* New Order */}
+            <a class="navbar-link" href="#portfolio">Portfolio</a> {/* New Order */}
+            <a class="navbar-link" href="#about">About</a> {/* New Order */}
             <a class="navbar-link" href="#contact">Contact</a>
-            <a href="/admin/login" class="navbar-admin-btn">Admin Login</a>
         </div>
 
         <button id="mobile-menu-toggle" class="navbar-mobile-toggle" aria-label="Toggle menu">
@@ -28,11 +27,10 @@
     <div id="mobile-menu-dropdown" class="navbar-mobile-dropdown">
         <div class="container navbar-mobile-links">
             <a class="navbar-link-mobile" href="#home">Home</a>
-            <a class="navbar-link-mobile" href="#services">Services</a>
-            <a class="navbar-link-mobile" href="#portfolio">Portfolio</a>
-            <a class="navbar-link-mobile" href="#about">About</a>
+            <a class="navbar-link-mobile" href="#services">Services</a> {/* New Order */}
+            <a class="navbar-link-mobile" href="#portfolio">Portfolio</a> {/* New Order */}
+            <a class="navbar-link-mobile" href="#about">About</a> {/* New Order */}
             <a class="navbar-link-mobile" href="#contact">Contact</a>
-            <a href="/admin/login" class="navbar-admin-btn-mobile">Admin Login</a>
         </div>
     </div>
 </nav>
@@ -91,44 +89,25 @@
                     }
                     if (isMobileMenuOpen) toggleMobileMenu();
                 } else if (isMobileMenuOpen) {
-                    // For external links or /admin/login link, allow default behavior but close menu
                     toggleMobileMenu();
                 }
             };
 
-            // Remove any existing listeners to prevent duplicates on re-renders if any
             window.removeEventListener('scroll', handleScroll);
             mobileMenuToggle.removeEventListener('click', toggleMobileMenu);
 
-            // Add listeners
             window.addEventListener('scroll', handleScroll);
             mobileMenuToggle.addEventListener('click', toggleMobileMenu);
             
-            // Logo link handler for public/admin navigation
             logoLink.addEventListener('click', (event) => {
-                if (window.location.pathname.startsWith('/admin')) {
-                    // If currently on an admin page, force full navigation to homepage
-                    window.location.href = '/'; 
-                    event.preventDefault(); // Prevent default anchor behavior
-                } else {
-                    // If on a public page, handle as an anchor scroll
-                    handleAnchorClick(event);
-                }
+                window.location.href = '/'; 
+                event.preventDefault(); 
             });
 
             document.querySelectorAll('.navbar-desktop-links .navbar-link, .navbar-mobile-links .navbar-link-mobile').forEach(link => {
                 link.addEventListener('click', handleAnchorClick);
             });
 
-            // For admin login/logout, just close menu if on mobile. Allows default navigation.
-            document.querySelectorAll('.navbar-admin-btn, .navbar-admin-btn-mobile').forEach(link => {
-                link.addEventListener('click', (event) => {
-                    // For anchor tags, let default navigation happen, but close mobile menu
-                    if (isMobileMenuOpen) toggleMobileMenu();
-                });
-            });
-
-            // Initial state
             handleScroll();
             mobileMenuDropdown.style.display = 'none';
             if (window.innerWidth < 768) {

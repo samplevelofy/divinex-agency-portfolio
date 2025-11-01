@@ -1,73 +1,59 @@
 ---
-// Footer.astro - Final Version
+// Footer.astro - Website Footer
 // All styles are in src/styles/globals.css
 ---
 
 <footer class="footer">
-  <button
-    id="scroll-to-top-button"
-    class="scroll-to-top-button"
-    aria-label="Back to top"
-  >
+  <button id="scroll-to-top-button" class="scroll-to-top-button" aria-label="Scroll to top">
     <i class="fa-solid fa-arrow-up"></i>
   </button>
 
   <div class="container footer-content">
     <div class="footer-logo">
-      <i class="fa-solid fa-palette footer-logo-icon"></i>
-      <span class="footer-logo-text">Divinex Agency</span>
+      <span>Divine<span class="brand-x">x</span> Agency</span>
     </div>
-
     <div class="footer-social-links">
-      <a
-        href="https://instagram.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="footer-link"
-      >
-        Instagram
-      </a>
-      <a
-        href="https://behance.net"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="footer-link"
-      >
-        Behance
-      </a>
-      <a
-        href="https://dribbble.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="footer-link"
-      >
-        Dribbble
-      </a>
+      <a href="https://instagram.com/bereketdesigns" target="_blank" rel="noopener noreferrer" class="footer-link"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://t.me/bereketdesigns" target="_blank" rel="noopener noreferrer" class="footer-link"><i class="fa-brands fa-telegram"></i></a>
+      <a href="https://linkedin.com/in/bereket-tadele-b15660252" target="_blank" rel="noopener noreferrer" class="footer-link"><i class="fa-brands fa-linkedin"></i></a>
     </div>
-
-    <div class="footer-copyright">
-      &copy; {new Date().getFullYear()} All rights reserved.
-    </div>
+    <p class="footer-copyright">&copy; {new Date().getFullYear()} Divinex Agency. All rights reserved.</p>
   </div>
 </footer>
 
 <script>
-  (function() {
-    const initFooter = () => {
-      const scrollToTopButton = document.getElementById('scroll-to-top-button');
-      if (scrollToTopButton) {
-        const scrollToTop = () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.addEventListener('astro:page-load', setupScrollToTop);
+    document.addEventListener('DOMContentLoaded', setupScrollToTop);
+
+    function setupScrollToTop() {
+        const scrollToTopButton = document.getElementById('scroll-to-top-button');
+        if (!scrollToTopButton) return;
+
+        // Show/hide button based on scroll position
+        const handleScrollVisibility = () => {
+            if (window.scrollY > 200) {
+                scrollToTopButton.style.display = 'flex'; // Use flex for centering
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
         };
-        // Remove existing listener to prevent duplicates
-        scrollToTopButton.removeEventListener('click', scrollToTop);
-        // Add new listener
-        scrollToTopButton.addEventListener('click', scrollToTop);
-      }
-    };
-    document.addEventListener('astro:page-load', initFooter);
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        initFooter();
+
+        // Scroll to top on click
+        const handleClickScroll = () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        scrollToTopButton.removeEventListener('click', handleClickScroll); // Prevent duplicates
+        window.removeEventListener('scroll', handleScrollVisibility); // Prevent duplicates
+
+        scrollToTopButton.addEventListener('click', handleClickScroll);
+        window.addEventListener('scroll', handleScrollVisibility);
+
+        // Initial check
+        handleScrollVisibility();
     }
-  })();
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setupScrollToTop();
+    }
 </script>
