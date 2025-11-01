@@ -1,9 +1,10 @@
 import { defineConfig } from 'astro/config';
+/*import image from '@astrojs/image';*/
+import vercel from '@astrojs/vercel/server'; // <--- ADDED: Import Vercel adapter
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  integrations: [],
-  // Middleware is enabled by the presence of src/middleware.ts file
-  // No explicit 'experimental' flag needed in recent Astro versions for this.
+  /*integrations: [image()],*/
+  adapter: vercel(), // <--- ADDED: Configure Vercel adapter
 });
