@@ -491,3 +491,7 @@ section {
 .floating-open-for-work .tagline-badge {
     margin-bottom: 0;
 }
+
+.brand-x{
+  color: var(--color-brand-primary);
+}
