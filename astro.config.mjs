@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import image from '@astrojs/image';
-import vercel from '@astrojs/vercel/server'; // <--- ADDED: Import Vercel adapter
+import vercel from '@astrojs/vercel'; // <--- ADDED: Import Vercel adapter
 
 // https://astro.build/config
 export default defineConfig({
