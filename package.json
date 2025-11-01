@@ -4,19 +4,17 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/image": "^0.20.2",
-    "@astrojs/vercel": "^9.0.0",
-    "@astrojs/vue": "^5.1.2",
-    "@fortawesome/fontawesome-free": "^7.1.0",
-    "@supabase/supabase-js": "^2.76.1",
-    "astro": "^5.15.1",
-    "supabase": "^2.54.10",
-    "uuid": "^13.0.0"
-
+    "@astrojs/vercel": "^8.0.0",          
+    "@supabase/supabase-js": "^2.39.0",
+    "astro": "^5.15.3"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.1"
   }
 }
