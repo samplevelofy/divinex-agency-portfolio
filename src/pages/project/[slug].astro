@@ -3,6 +3,8 @@
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase.ts';
 import { getOptimizedImageUrl } from '../../lib/utils.ts';
+import {  formatTextForHtml } from '../../lib/utils.ts';
+
 import type { Project } from '../../lib/database.types';
 
 // This function generates the static paths for each project
@@ -67,6 +69,7 @@ if (!project) {
 
 // Prepare gallery images (ensure it's an array for mapping)
 const galleryImages = project.gallery_image_urls || [];
+const formattedLongDescription = formatTextForHtml(project.long_description); // <--- NEW: Format description
 ---
 
 <Layout title={project.title}>
@@ -87,7 +90,8 @@ const galleryImages = project.gallery_image_urls || [];
 
             <div class="project-description-block">
                 <h2 class="heading-2">Project Overview</h2>
-                <p class="project-long-description">{project.long_description || project.description || 'No detailed description available.'}</p>
+                <div class="project-long-description" set:html={formattedLongDescription}>
+                </div>
             </div>
 
             {galleryImages.length > 0 && (
@@ -159,11 +163,13 @@ const galleryImages = project.gallery_image_urls || [];
         border-bottom: 2px solid var(--color-border);
         padding-bottom: var(--spacing-sm);
     }
-    .project-long-description {
+    .project-long-description p { /* <--- NEW: Target individual paragraphs */
         font-size: 1.125rem;
         line-height: 1.7;
         color: var(--color-neutral-700);
+        margin-bottom: var(--spacing-md); /* Add spacing between paragraphs */
     }
+    
     .project-gallery {
         margin-top: var(--spacing-3xl);
     }
@@ -172,14 +178,17 @@ const galleryImages = project.gallery_image_urls || [];
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: var(--spacing-lg);
         margin-top: var(--spacing-xl);
+        
     }
     .gallery-grid img {
         width: 100%;
-        height: 200px; /* Fixed height for gallery images */
+        height: auto; /* Fixed height for gallery images */
         object-fit: cover;
         border-radius: var(--spacing-sm);
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         transition: transform 0.2s ease;
+        display: block;
+        min-height: 150px;
     }
     .gallery-grid img:hover {
         transform: scale(1.03);
