@@ -1,49 +1,113 @@
 ---
-// Services.astro - Final Version
+// Services.astro - Final Version with on-scroll animations
 // All styles are in src/styles/globals.css
 ---
 
 <section id="services" class="services-section">
-  <div class="container">
-    <div class="text-center section-header">
-      <h2 class="heading-2">What We Do</h2>
-      <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
-        Specialized design services to elevate your brand and connect with your audience
-      </p>
+    <div class="container">
+        <div class="text-center section-header" data-animate-on-scroll> {/* <--- ADDED data-animate-on-scroll */}
+            <h2 class="heading-2">Our Services</h2>
+            <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
+                Divinex Agency offers a comprehensive suite of branding and design services to elevate your business.
+            </p>
+        </div>
+
+        <div class="services-grid" data-animate-on-scroll-children> {/* <--- ADDED data-animate-on-scroll-children */}
+            <article class="service-item" style="--animation-order: 0;"> {/* <--- ADDED order variable */}
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-lightbulb service-icon"></i>
+                </div>
+                <h3 class="service-title">Branding Strategy</h3>
+                <p class="service-description">We work with you to define your brand's core values, mission, and voice, ensuring a consistent and compelling message across all platforms.</p>
+            </article>
+
+            <article class="service-item" style="--animation-order: 1;"> {/* <--- ADDED order variable */}
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-pen-ruler service-icon"></i>
+                </div>
+                <h3 class="service-title">Logo Design</h3>
+                <p class="service-description">From initial concepts to final vector files, we craft unique and memorable logos that capture the essence of your business.</p>
+            </article>
+
+            <article class="service-item" style="--animation-order: 2;"> {/* <--- ADDED order variable */}
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-address-card service-icon"></i>
+                </div>
+                <h3 class="service-title">Business Card Design</h3>
+                <p class="service-description">Make a lasting first impression with professionally designed business cards that reflect your brand's identity and style.</p>
+            </article>
+
+            <article class="service-item" style="--animation-order: 3;"> {/* <--- ADDED order variable */}
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-sitemap service-icon"></i>
+                </div>
+                <h3 class="service-title">Brand Guidelines</h3>
+                <p class="service-description">We develop comprehensive brand guideline documents to ensure consistency in your visual identity, typography, and color palette.</p>
+            </article>
+
+            <article class="service-item" style="--animation-order: 4;"> {/* <--- ADDED order variable */}
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-mobile-screen-button service-icon"></i>
+                </div>
+                <h3 class="service-title">Digital Asset Creation</h3>
+                <p class="service-description">Need social media graphics, website elements, or other digital collateral? We design assets optimized for various online platforms.</p>
+            </article>
+
+            <article class="service-item" style="--animation-order: 5;"> {/* <--- ADDED order variable */}
+                <div class="service-icon-wrapper">
+                    <i class="fa-solid fa-rss service-icon"></i>
+                </div>
+                <h3 class="service-title">(Future) Blog & Content</h3>
+                <p class="service-description">We plan to add a dedicated section for articles, insights, and news related to branding and design. Stay tuned!</p>
+            </article>
+        </div>
     </div>
 
-    <div class="services-grid">
-      <div class="service-item group">
-        <div class="service-icon-wrapper">
-          <i class="fa-solid fa-palette service-icon"></i>
-        </div>
-        <h3 class="service-title">Branding</h3>
-        <p class="service-description">Complete brand identity design including color palettes, typography, and brand guidelines that tell your unique story.</p>
-      </div>
+    <script client:load> {/* <--- Keep client:load */}
+        document.addEventListener('DOMContentLoaded', setupServicesAnimations);
+        document.addEventListener('astro:after-swap', setupServicesAnimations);
 
-      <div class="service-item group">
-        <div class="service-icon-wrapper">
-          <i class="fa-solid fa-layer-group service-icon"></i>
-        </div>
-        <h3 class="service-title">Logo Design</h3>
-        <p class="service-description">Memorable and versatile logos that capture your brand essence and work across all mediums and applications.</p>
-      </div>
+        function setupServicesAnimations() {
+            console.log('Setting up Services section animations...');
+            
+            const sectionHeader = document.querySelector('.services-section .section-header[data-animate-on-scroll]');
+            const serviceItemsContainer = document.querySelector('.services-section .services-grid[data-animate-on-scroll-children]');
 
-      <div class="service-item group">
-        <div class="service-icon-wrapper">
-          <i class="fa-solid fa-credit-card service-icon"></i>
-        </div>
-        <h3 class="service-title">Business Cards</h3>
-        <p class="service-description">Professional business card design that makes a lasting first impression and perfectly represents your brand.</p>
-      </div>
+            const observerOptions = {
+                root: null, // relative to the viewport
+                rootMargin: '0px',
+                threshold: 0.2 // Trigger when 20% of the section is visible
+            };
 
-      <div class="service-item group">
-        <div class="service-icon-wrapper">
-          <i class="fa-solid fa-share-nodes service-icon"></i>
-        </div>
-        <h3 class="service-title">Social Media</h3>
-        <p class="service-description">Eye-catching social media graphics and templates that engage your audience and maintain brand consistency.</p>
-      </div>
-    </div>
-  </div>
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        console.log('Services section is in view. Triggering animations.');
+                        // Add animation class to header
+                        if (sectionHeader) {
+                            sectionHeader.classList.add('fade-in-animated');
+                        }
+                        // Add animation class to service items container
+                        if (serviceItemsContainer) {
+                            serviceItemsContainer.classList.add('slide-in-animated');
+                        }
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
+                });
+            }, observerOptions);
+
+            // Observe the entire services section (or a suitable parent)
+            const servicesSection = document.getElementById('services');
+            if (servicesSection) {
+                observer.observe(servicesSection);
+                console.log('Intersection Observer started for Services section.');
+            } else {
+                console.warn('Services section element not found.');
+            }
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setupServicesAnimations();
+        }
+    </script>
 </section>

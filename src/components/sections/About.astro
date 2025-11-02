@@ -1,50 +1,88 @@
 ---
-// About.astro - Final Version
+// About.astro - Final Version with on-scroll animations
 // All styles are in src/styles/globals.css
 ---
 
 <section id="about" class="about-section">
-  <div class="container">
-    <div class="about-content">
-      <div class="text-center section-header">
-        <h2 class="heading-2">About Divinex</h2>
-        <p class="text-xl text-neutral-600 max-w-3xl mx-auto leading-relaxed mb-8">
-          We are a passionate graphic design agency dedicated to creating visual experiences that resonate.
-          With a keen eye for detail and a love for clean, modern aesthetics, we help brands tell
-          their stories through compelling design.
-        </p>
-        <p class="text-lg text-neutral-600 max-w-3xl mx-auto leading-relaxed">
-          Our approach combines strategic thinking with creative execution, ensuring every project
-          not only looks beautiful but also achieves its intended purpose. From initial concept to
-          final delivery, we work closely with clients to bring their vision to life.
-        </p>
+  <div class="container about-content">
+    <div class="text-center section-header" data-animate-on-scroll> {/* <--- ADDED data-animate-on-scroll */}
+      <h2 class="heading-2">About Divinex Agency</h2>
+      <p class="text-xl text-neutral-600 max-w-3xl mx-auto">
+        At Divinex Agency, we believe in the transformative power of design. We craft compelling visual identities that resonate with your audience and elevate your brand's presence.
+      </p>
+    </div>
+
+    <div class="stats-grid" data-animate-on-scroll-children> {/* <--- ADDED data-animate-on-scroll-children */}
+      <div class="stat-item" style="--animation-order: 0;"> {/* <--- ADDED order variable */}
+        <div class="stat-icon-wrapper">
+          <i class="fa-solid fa-lightbulb stat-icon"></i>
+        </div>
+        <div class="stat-value">150+</div>
+        <div class="stat-label">Projects Completed</div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-icon-wrapper">
-            <i class="fa-solid fa-briefcase stat-icon"></i>
-          </div>
-          <div class="stat-value">100+</div>
-          <div class="stat-label">Projects Completed</div>
+      <div class="stat-item" style="--animation-order: 1;"> {/* <--- ADDED order variable */}
+        <div class="stat-icon-wrapper">
+          <i class="fa-solid fa-users stat-icon"></i>
         </div>
+        <div class="stat-value">50+</div>
+        <div class="stat-label">Happy Clients</div>
+      </div>
 
-        <div class="stat-item">
-          <div class="stat-icon-wrapper">
-            <i class="fa-solid fa-users stat-icon"></i>
-          </div>
-          <div class="stat-value">50+</div>
-          <div class="stat-label">Happy Clients</div>
+      <div class="stat-item" style="--animation-order: 2;"> {/* <--- ADDED order variable */}
+        <div class="stat-icon-wrapper">
+          <i class="fa-solid fa-award stat-icon"></i>
         </div>
-
-        <div class="stat-item">
-          <div class="stat-icon-wrapper">
-            <i class="fa-solid fa-award stat-icon"></i>
-          </div>
-          <div class="stat-value">5+</div>
-          <div class="stat-label">Years Experience</div>
-        </div>
+        <div class="stat-value">10</div>
+        <div class="stat-label">Years Experience</div>
       </div>
     </div>
   </div>
+
+  <script client:load> {/* <--- ADDED client:load */}
+    document.addEventListener('DOMContentLoaded', setupAboutAnimations);
+    document.addEventListener('astro:after-swap', setupAboutAnimations);
+
+    function setupAboutAnimations() {
+        console.log('Setting up About section animations...');
+        
+        const sectionHeader = document.querySelector('.about-section .section-header[data-animate-on-scroll]');
+        const statsGrid = document.querySelector('.about-section .stats-grid[data-animate-on-scroll-children]');
+
+        const observerOptions = {
+            root: null, // relative to the viewport
+            rootMargin: '0px',
+            threshold: 0.2 // Trigger when 20% of the section is visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    console.log('About section is in view. Triggering animations.');
+                    // Add animation class to header
+                    if (sectionHeader) {
+                        sectionHeader.classList.add('fade-in-animated');
+                    }
+                    // Add animation class to stats grid
+                    if (statsGrid) {
+                        statsGrid.classList.add('fade-in-up-staggered-animated');
+                    }
+                    observer.unobserve(entry.target); // Stop observing once animated
+                }
+            });
+        }, observerOptions);
+
+        const aboutSection = document.getElementById('about');
+        if (aboutSection) {
+            observer.observe(aboutSection);
+            console.log('Intersection Observer started for About section.');
+        } else {
+            console.warn('About section element not found.');
+        }
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setupAboutAnimations();
+    }
+  </script>
 </section>

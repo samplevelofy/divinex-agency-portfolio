@@ -55,9 +55,9 @@
 /* Base Styles */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--spacing-4xl); /* Space for the sticky header */
+  scroll-padding-top: var(--spacing-4xl);
   font-family: var(--font-sans);
-  line-height: 1.5; /* Default line height for body text */
+  line-height: 1.5;
 }
 
 body {
@@ -114,8 +114,8 @@ a:hover {
 
 /* Generic section padding */
 section {
-    padding-top: var(--spacing-3xl); /* <--- ADJUSTED: Reduced from 5xl to 4xl */
-    padding-bottom: var(--spacing-3xl); /* <--- ADJUSTED: Reduced from 5xl to 4xl */
+    padding-top: var(--spacing-4xl); /* Adjusted */
+    padding-bottom: var(--spacing-4xl); /* Adjusted */
 }
 
 /* --- Animations --- */
@@ -146,6 +146,113 @@ section {
   100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
 }
 
+/* Initial state for elements that will animate on scroll */
+.animate-slide-up-initial {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Add transition for smoothness */
+}
+/* Ensure the final state of the animation (animate-slide-up) is correct */
+.animate-slide-up {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* ... existing Animations block ... */
+
+/* Classes applied by JavaScript for animations - reusing fade-in for header */
+.contact-section .section-header {
+    opacity: 100%;
+    transform: translateY(20px);
+}
+.contact-section .section-header.fade-in-animated {
+    animation: fadeInOnScroll 0.6s ease-out forwards;
+}
+
+/* New styles for Contact cards animation */
+@keyframes scaleUpOnScroll {
+    0% { opacity: 0; transform: scale(0.9); } /* Start slightly smaller and transparent */
+    100% { opacity: 1; transform: scale(1); } /* End at original size and opaque */
+}
+
+.contact-section .contact-container .contact-card {
+    opacity: 0; /* Hidden by default */
+    transform: scale(0.9); /* Start slightly smaller */
+}
+
+.contact-section .contact-container.scale-up-animated .contact-card {
+    animation: scaleUpOnScroll 0.5s ease-out forwards; /* Apply scale up animation */
+    animation-delay: calc(0.1s * var(--animation-order)); /* Stagger delay */
+}
+/* ... existing Animations block ... */
+
+/* New Keyframes for On-Scroll Animations */
+@keyframes fadeInOnScroll {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromSideOnScroll {
+    0% { opacity: 0; transform: translateX(-50px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Classes applied by JavaScript for animations */
+.services-section .section-header {
+    opacity: 0; /* Hidden by default */
+    transform: translateY(20px); /* Slightly below */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Smooth transition for non-JS states */
+}
+
+.services-section .section-header.fade-in-animated {
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeInOnScroll 0.6s ease-out forwards; /* Use fadeIn for text */
+}
+
+.services-section .services-grid .service-item {
+    opacity: 0; /* Hidden by default */
+    transform: translateX(-50px); /* Start from left */
+}
+
+.services-section .services-grid.slide-in-animated .service-item {
+    animation: slideInFromSideOnScroll 0.6s ease-out forwards; /* Use side slide for items */
+    animation-delay: calc(0.1s * var(--animation-order)); /* Stagger delay */
+}
+
+/* Remove previous animation-related definitions that are no longer used by Services */
+/* .animate-slide-in-from-side { animation: slideInFromSide 0.6s ease-out var(--animation-delay, 0s) both; } */
+/* Ensure .animate-fade-in and .animate-fade-in-delay are not conflicting with .services-section .section-header */
+/* The classes applied by JS are specific enough not to conflict with global .animate-fade-in etc. */
+
+/* ... rest of your CSS ... */
+/* ... existing Animations block ... */
+
+/* Classes applied by JavaScript for animations - reusing fade-in for header */
+.about-section .section-header {
+    opacity: 100%;
+    transform: translateY(20px);
+}
+.about-section .section-header.fade-in-animated {
+    animation: fadeInOnScroll 0.6s ease-out forwards;
+}
+
+/* New styles for About stats cards animation */
+@keyframes fadeInUpOnScroll {
+    0% { opacity: 0; transform: translateY(30px); } /* Start lower and transparent */
+    100% { opacity: 1; transform: translateY(0); }  /* End at original position and opaque */
+}
+
+.about-section .stats-grid .stat-item {
+    opacity: 0; /* Hidden by default */
+    transform: translateY(30px); /* Start lower */
+}
+
+.about-section .stats-grid.fade-in-up-staggered-animated .stat-item {
+    animation: fadeInUpOnScroll 0.7s ease-out forwards; /* Apply fade in up animation */
+    animation-delay: calc(0.15s * var(--animation-order)); /* Stagger delay */
+}
+
+/* ... rest of your CSS ... */
 
 /* --- Navbar Styles --- */
 .main-navbar {
@@ -156,7 +263,7 @@ section {
 }
 
 .main-navbar.scrolled {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.05);
 }
@@ -177,6 +284,9 @@ section {
 .navbar-logo-icon { width: var(--spacing-lg); height: var(--spacing-lg); color: var(--color-brand-primary); }
 .navbar-logo-text { color: var(--color-text-dark); }
 .navbar-logo-button:hover .navbar-logo-text { color: var(--color-brand-primary); }
+.brand-x {
+    color: var(--color-brand-primary);
+}
 
 /* Desktop Links */
 .navbar-desktop-links {
@@ -267,7 +377,7 @@ section {
 @media (min-width: 768px) {
     .footer-social-links {
         justify-content: center;
-        margin-inline: auto; /* <--- ADDED: This centers the social links block itself when it's a flex item in a row layout */
+        flex-grow: 1; /* This makes it expand to fill space */
     }
 }
 .footer-link { color: var(--color-text-on-dark); transition: color 0.15s ease; text-decoration: none; }

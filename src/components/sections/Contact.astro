@@ -1,38 +1,82 @@
 ---
-// Contact.astro - Final Simplified Version (Clickable Cards)
+// Contact.astro - Final Simplified Version (Animated)
 // All styles are in src/styles/globals.css
 ---
 
 <section id="contact" class="contact-section">
   <div class="container">
-    <div class="text-center section-header">
+    <div class="text-center section-header" data-animate-on-scroll> {/* <--- ADDED data-animate-on-scroll */}
       <h2 class="heading-2">Let's Work Together</h2>
       <p class="text-xl text-neutral-600 max-w-2xl mx-auto">
         Have a project in mind? We'd love to hear about it. Reach out via email or social media.
       </p>
     </div>
 
-    <div class="contact-container">
-        {/* EMAIL CARD */}
-        <a href="mailto:bereketdesigns@gmail.com" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer"> {/* <--- Entire card is now a link */}
+    <div class="contact-container" data-animate-on-scroll-children> {/* <--- ADDED data-animate-on-scroll-children */}
+        <a href="mailto:hello@divinex.com" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer" style="--animation-order: 0;"> {/* <--- ADDED order variable */}
             <i class="fa-solid fa-envelope contact-icon"></i>
             <h3>Email Us</h3>
-            <span class="contact-link-text">bereketdesigns@gmail.com</span> {/* <--- Text inside span to allow card link */}
+            <span class="contact-link-text">hello@divinex.com</span>
         </a>
         
-        {/* INSTAGRAM CARD */}
-        <a href="https://www.instagram.com/bereketdesigns/" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer"> {/* <--- Entire card is now a link */}
+        <a href="https://instagram.com/divinex_agency" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer" style="--animation-order: 1;"> {/* <--- ADDED order variable */}
             <i class="fa-brands fa-instagram contact-icon"></i>
             <h3>Instagram</h3>
-            <span class="contact-link-text">@bereketdesigns</span> {/* <--- Text inside span */}
+            <span class="contact-link-text">@divinex_agency</span>
         </a>
         
-        {/* Telegram CARD */}
-        <a href="https://t.me/bereketdesigns" target="_blank" rel="noopener noreferrer" class="contact-card contact-card-link"> {/* <--- MODIFIED LINK */}
-            <i class="fa-brands fa-telegram contact-icon"></i> {/* <--- MODIFIED ICON */}
-            <h3>Telegram</h3> {/* <--- MODIFIED TEXT */}
-            <span class="contact-link-text">@bereketdesigns</span> {/* <--- MODIFIED TEXT */}
+        <a href="https://t.me/yourtelegramusername" class="contact-card contact-card-link" target="_blank" rel="noopener noreferrer" style="--animation-order: 2;"> {/* <--- ADDED order variable */}
+            <i class="fa-brands fa-telegram contact-icon"></i>
+            <h3>Telegram</h3>
+            <span class="contact-link-text">@divinex_telegram</span>
         </a>
     </div>
   </div>
+
+  <script client:load> {/* <--- ADDED client:load */}
+    document.addEventListener('DOMContentLoaded', setupContactAnimations);
+    document.addEventListener('astro:after-swap', setupContactAnimations);
+
+    function setupContactAnimations() {
+        console.log('Setting up Contact section animations...');
+        
+        const sectionHeader = document.querySelector('.contact-section .section-header[data-animate-on-scroll]');
+        const contactCardsContainer = document.querySelector('.contact-section .contact-container[data-animate-on-scroll-children]');
+
+        const observerOptions = {
+            root: null, // relative to the viewport
+            rootMargin: '0px',
+            threshold: 0.2 // Trigger when 20% of the section is visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    console.log('Contact section is in view. Triggering animations.');
+                    // Add animation class to header
+                    if (sectionHeader) {
+                        sectionHeader.classList.add('fade-in-animated');
+                    }
+                    // Add animation class to contact cards container
+                    if (contactCardsContainer) {
+                        contactCardsContainer.classList.add('scale-up-animated');
+                    }
+                    observer.unobserve(entry.target); // Stop observing once animated
+                }
+            });
+        }, observerOptions);
+
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+            observer.observe(contactSection);
+            console.log('Intersection Observer started for Contact section.');
+        } else {
+            console.warn('Contact section element not found.');
+        }
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setupContactAnimations();
+    }
+  </script>
 </section>
