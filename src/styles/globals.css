@@ -605,3 +605,13 @@ section {
 .brand-x{
   color: var(--color-brand-primary);
 }
+
+/* Style for the "Made by Arkeon Studio" link */
+.footer-credit-link {
+    color: var(--color-neutral-400); /* Example: make it slightly lighter */
+    font-weight: 500;
+    text-decoration: underline !important; /* Ensure it's underlined on hover */
+}
+.footer-credit-link:hover {
+    color: var(--color-brand-primary); /* Example: change color on hover */
+}
